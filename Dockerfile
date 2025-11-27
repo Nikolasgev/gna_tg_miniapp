@@ -18,9 +18,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Открытие порта (Railway использует переменную PORT)
-EXPOSE ${PORT:-8000}
+EXPOSE 8000
 
-# Команда по умолчанию
-# Railway переопределит это через startCommand в railway.json
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Делаем start.sh исполняемым
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Команда по умолчанию (Railway переопределит через startCommand)
+CMD ["./start.sh"]
 
