@@ -5,7 +5,9 @@
 PORT=${PORT:-8000}
 
 echo "Starting application on port $PORT"
+echo "Environment variables:"
+env | grep -E "PORT|DATABASE|ENVIRONMENT" || true
 
-# Запускаем uvicorn
-exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# Запускаем uvicorn с дополнительными опциями для production
+exec uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1 --log-level info
 
