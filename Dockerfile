@@ -17,12 +17,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копирование кода приложения
 COPY . .
 
+# Делаем start.sh исполняемым
+RUN chmod +x /app/start.sh
+
 # Открытие порта (Railway использует переменную PORT)
 EXPOSE 8000
-
-# Делаем start.sh исполняемым
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
 
 # Команда по умолчанию (Railway переопределит через startCommand)
 CMD ["./start.sh"]
