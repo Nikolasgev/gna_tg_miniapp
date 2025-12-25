@@ -1,4 +1,5 @@
 """Конфигурация приложения."""
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +11,14 @@ class Settings(BaseSettings):
 
     # Redis
     redis_url: str = "redis://localhost:6379/0"
+
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def convert_database_url(cls, v: str) -> str:
+        """Конвертируем postgresql:// в postgresql+asyncpg:// для asyncpg."""
+        if v.startswith("postgresql://") and "+asyncpg" not in v:
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # Security
     secret_key: str = "your-secret-key-change-in-production"

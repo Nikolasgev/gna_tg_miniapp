@@ -4,9 +4,14 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
+# Конвертируем postgresql:// в postgresql+asyncpg:// если нужно
+database_url = settings.database_url
+if database_url.startswith("postgresql://") and "+asyncpg" not in database_url:
+    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 # Создаем асинхронный движок
 engine = create_async_engine(
-    settings.database_url,
+    database_url,
     echo=settings.is_development,
     future=True,
 )
