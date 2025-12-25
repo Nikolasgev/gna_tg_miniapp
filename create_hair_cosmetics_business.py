@@ -362,3 +362,6 @@ if __name__ == "__main__":
     print("🚀 Создание бизнеса косметики для волос...\n")
     asyncio.run(create_hair_cosmetics_business())
 
+
+
+

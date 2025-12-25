@@ -17,6 +17,7 @@ class Product(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     business_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("businesses.id"), nullable=False, index=True)
+    # Составной индекс для частых запросов: бизнес + активность
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
@@ -31,8 +32,11 @@ class Product(Base):
     discount_valid_from: Mapped[datetime | None] = mapped_column(nullable=True)  # Дата начала действия скидки
     discount_valid_until: Mapped[datetime | None] = mapped_column(nullable=True)  # Дата окончания действия скидки
     
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    # Управление складом
+    stock_quantity: Mapped[int | None] = mapped_column(nullable=True)  # Количество товара на складе (None = неограниченно)
+    
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships

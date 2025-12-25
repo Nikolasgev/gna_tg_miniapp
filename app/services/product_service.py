@@ -97,6 +97,7 @@ class ProductService:
         discount_price: Decimal | None = None,
         discount_valid_from: datetime | None = None,
         discount_valid_until: datetime | None = None,
+        stock_quantity: int | None = None,
     ) -> UUID:  # Возвращаем только ID, чтобы избежать проблем с lazy loading
         """Создать новый продукт."""
         product = Product(
@@ -113,6 +114,7 @@ class ProductService:
             discount_price=discount_price,
             discount_valid_from=discount_valid_from,
             discount_valid_until=discount_valid_until,
+            stock_quantity=stock_quantity,
         )
         self.db.add(product)
         await self.db.flush()  # Получаем ID продукта
@@ -156,6 +158,7 @@ class ProductService:
         discount_price: Decimal | None = None,
         discount_valid_from: datetime | None = None,
         discount_valid_until: datetime | None = None,
+        stock_quantity: int | None = None,
     ) -> Product | None:
         """Обновить продукт."""
         product = await self.get_by_id(product_id)
@@ -181,6 +184,9 @@ class ProductService:
         # Поля для скидок
         if discount_percentage is not None:
             product.discount_percentage = discount_percentage
+        # Управление складом
+        if stock_quantity is not None:
+            product.stock_quantity = stock_quantity
         if discount_price is not None:
             product.discount_price = discount_price
         if discount_valid_from is not None:

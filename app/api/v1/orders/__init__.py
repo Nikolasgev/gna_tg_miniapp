@@ -6,8 +6,19 @@ from typing import List
 import uuid
 
 from app.database import get_db
+from app.core.auth import get_current_admin
 
 router = APIRouter()
+
+
+def _extract_delivery_info(order) -> tuple[float | None, str | None]:
+    """Извлечь delivery_cost и delivery_method из order_metadata."""
+    delivery_cost = None
+    delivery_method = None
+    if order.order_metadata:
+        delivery_cost = order.order_metadata.get("delivery_cost")
+        delivery_method = order.order_metadata.get("delivery_method")
+    return delivery_cost, delivery_method
 
 
 class OrderItemRequest(BaseModel):
@@ -44,6 +55,9 @@ class CreateOrderResponse(BaseModel):
     """Ответ на создание заказа."""
 
     order_id: uuid.UUID
+    total_amount: float  # Итоговая сумма (включая доставку)
+    delivery_cost: float | None = None  # Стоимость доставки
+    delivery_method: str | None = None  # Способ доставки
     payment: PaymentResponse | None = None
 
 
@@ -70,6 +84,7 @@ async def create_order(
                 "product_id": str(item.product_id),
                 "quantity": item.quantity,
                 "note": item.note,
+                "selected_variations": item.selected_variations or {},
             }
             for item in request.items
         ]
@@ -121,8 +136,18 @@ async def create_order(
                 logger.error(f"Failed to create YooKassa payment for order {order.id}: {e}", exc_info=True)
                 # Возвращаем заказ без payment - пользователь может оплатить позже
 
+        # Извлекаем delivery_cost и delivery_method из order_metadata
+        delivery_cost = None
+        delivery_method = None
+        if order.order_metadata:
+            delivery_cost = order.order_metadata.get("delivery_cost")
+            delivery_method = order.order_metadata.get("delivery_method")
+
         return CreateOrderResponse(
             order_id=order.id,
+            total_amount=float(order.total_amount),
+            delivery_cost=float(delivery_cost) if delivery_cost is not None else None,
+            delivery_method=delivery_method,
             payment=payment_response,
         )
     except ValueError as e:
@@ -151,6 +176,10 @@ class OrderResponse(BaseModel):
     customer_phone: str
     customer_address: str | None
     total_amount: float
+    subtotal_amount: float | None = None  # Сумма до скидок (включая доставку)
+    discount_amount: float | None = None  # Общая сумма скидки
+    delivery_cost: float | None = None  # Стоимость доставки
+    delivery_method: str | None = None  # Способ доставки (pickup/delivery)
     currency: str
     status: str
     payment_status: str
@@ -160,17 +189,52 @@ class OrderResponse(BaseModel):
     items: List[OrderItemResponse]
 
 
+def _create_order_response(order) -> OrderResponse:
+    """Создать OrderResponse из Order с полной информацией."""
+    delivery_cost, delivery_method = _extract_delivery_info(order)
+    
+    return OrderResponse(
+        id=order.id,
+        customer_name=order.customer_name,
+        customer_phone=order.customer_phone,
+        customer_address=order.customer_address,
+        total_amount=float(order.total_amount),
+        subtotal_amount=float(order.subtotal_amount) if order.subtotal_amount else None,
+        discount_amount=float(order.discount_amount) if order.discount_amount else None,
+        delivery_cost=float(delivery_cost) if delivery_cost is not None else None,
+        delivery_method=delivery_method,
+        currency=order.currency,
+        status=order.status,
+        payment_status=order.payment_status,
+        payment_method=order.payment_method,
+        created_at=order.created_at.isoformat(),
+        updated_at=order.updated_at.isoformat(),
+        items=[
+            OrderItemResponse(
+                id=item.id,
+                product_id=item.product_id,
+                title_snapshot=item.title_snapshot,
+                quantity=item.quantity,
+                unit_price=float(item.unit_price),
+                total_price=float(item.total_price),
+            )
+            for item in order.items
+        ],
+    )
+
+
 @router.get("/{business_slug}/orders", response_model=List[OrderResponse])
 async def get_orders(
     business_slug: str,
     page: int = 1,
     limit: int = 20,
     db: AsyncSession = Depends(get_db),
+    current_admin: dict = Depends(get_current_admin),
 ):
     """
     Получить список заказов бизнеса (для админки).
     
-    ⚠️ ВНИМАНИЕ: В production здесь должна быть проверка авторизации!
+    Требует авторизации администратора.
     """
     from app.services.order_service import OrderService
     from datetime import datetime
@@ -184,32 +248,7 @@ async def get_orders(
 
     result = []
     for order in orders:
-        result.append(
-            OrderResponse(
-                id=order.id,
-                customer_name=order.customer_name,
-                customer_phone=order.customer_phone,
-                customer_address=order.customer_address,
-                total_amount=float(order.total_amount),
-                currency=order.currency,
-                status=order.status,
-                payment_status=order.payment_status,
-                payment_method=order.payment_method,
-                created_at=order.created_at.isoformat(),
-                updated_at=order.updated_at.isoformat(),
-                items=[
-                    OrderItemResponse(
-                        id=item.id,
-                        product_id=item.product_id,
-                        title_snapshot=item.title_snapshot,
-                        quantity=item.quantity,
-                        unit_price=float(item.unit_price),
-                        total_price=float(item.total_price),
-                    )
-                    for item in order.items
-                ],
-            )
-        )
+        result.append(_create_order_response(order))
 
     return result
 
@@ -233,43 +272,21 @@ async def get_order(
             detail=f"Заказ с ID '{order_id}' не найден",
         )
 
-    return OrderResponse(
-        id=order.id,
-        customer_name=order.customer_name,
-        customer_phone=order.customer_phone,
-        customer_address=order.customer_address,
-        total_amount=float(order.total_amount),
-        currency=order.currency,
-        status=order.status,
-        payment_status=order.payment_status,
-        payment_method=order.payment_method,
-        created_at=order.created_at.isoformat(),
-        updated_at=order.updated_at.isoformat(),
-        items=[
-            OrderItemResponse(
-                id=item.id,
-                product_id=item.product_id,
-                title_snapshot=item.title_snapshot,
-                quantity=item.quantity,
-                unit_price=float(item.unit_price),
-                total_price=float(item.total_price),
-            )
-            for item in order.items
-        ],
-    )
+    return _create_order_response(order)
 
 
 @router.post("/orders/{order_id}/cancel", response_model=OrderResponse)
 async def cancel_order(
     order_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_admin: dict = Depends(get_current_admin),
 ):
     """
-    Отменить заказ.
+    Отменить заказ (только для администратора).
     
     Заказ можно отменить только если его статус 'new' или 'accepted'.
     
-    ⚠️ ВНИМАНИЕ: В production здесь должна быть проверка авторизации и права пользователя на отмену своего заказа!
+    Требует авторизации администратора.
     """
     from app.services.order_service import OrderService
 
@@ -289,30 +306,7 @@ async def cancel_order(
             detail=f"Заказ с ID '{order_id}' не найден",
         )
 
-    return OrderResponse(
-        id=order.id,
-        customer_name=order.customer_name,
-        customer_phone=order.customer_phone,
-        customer_address=order.customer_address,
-        total_amount=float(order.total_amount),
-        currency=order.currency,
-        status=order.status,
-        payment_status=order.payment_status,
-        payment_method=order.payment_method,
-        created_at=order.created_at.isoformat(),
-        updated_at=order.updated_at.isoformat(),
-        items=[
-            OrderItemResponse(
-                id=item.id,
-                product_id=item.product_id,
-                title_snapshot=item.title_snapshot,
-                quantity=item.quantity,
-                unit_price=float(item.unit_price),
-                total_price=float(item.total_price),
-            )
-            for item in order.items
-        ],
-    )
+    return _create_order_response(order)
 
 
 @router.get("/orders/user/{user_telegram_id}", response_model=List[OrderResponse])
@@ -338,32 +332,7 @@ async def get_user_orders(
 
     result = []
     for order in orders:
-        result.append(
-            OrderResponse(
-                id=order.id,
-                customer_name=order.customer_name,
-                customer_phone=order.customer_phone,
-                customer_address=order.customer_address,
-                total_amount=float(order.total_amount),
-                currency=order.currency,
-                status=order.status,
-                payment_status=order.payment_status,
-                payment_method=order.payment_method,
-                created_at=order.created_at.isoformat(),
-                updated_at=order.updated_at.isoformat(),
-                items=[
-                    OrderItemResponse(
-                        id=item.id,
-                        product_id=item.product_id,
-                        title_snapshot=item.title_snapshot,
-                        quantity=item.quantity,
-                        unit_price=float(item.unit_price),
-                        total_price=float(item.total_price),
-                    )
-                    for item in order.items
-                ],
-            )
-        )
+        result.append(_create_order_response(order))
 
     return result
 
@@ -380,11 +349,12 @@ async def update_order_status(
     order_id: uuid.UUID,
     request: UpdateOrderStatusRequest,
     db: AsyncSession = Depends(get_db),
+    current_admin: dict = Depends(get_current_admin),
 ):
     """
     Обновить статус заказа и/или статус оплаты.
     
-    ⚠️ ВНИМАНИЕ: В production здесь должна быть проверка авторизации!
+    Требует авторизации администратора.
     """
     from app.services.order_service import OrderService
 
@@ -414,43 +384,21 @@ async def update_order_status(
             detail=f"Заказ с ID '{order_id}' не найден",
         )
 
-    return OrderResponse(
-        id=order.id,
-        customer_name=order.customer_name,
-        customer_phone=order.customer_phone,
-        customer_address=order.customer_address,
-        total_amount=float(order.total_amount),
-        currency=order.currency,
-        status=order.status,
-        payment_status=order.payment_status,
-        payment_method=order.payment_method,
-        created_at=order.created_at.isoformat(),
-        updated_at=order.updated_at.isoformat(),
-        items=[
-            OrderItemResponse(
-                id=item.id,
-                product_id=item.product_id,
-                title_snapshot=item.title_snapshot,
-                quantity=item.quantity,
-                unit_price=float(item.unit_price),
-                total_price=float(item.total_price),
-            )
-            for item in order.items
-        ],
-    )
+    return _create_order_response(order)
 
 
 @router.post("/orders/{order_id}/cancel", response_model=OrderResponse)
 async def cancel_order(
     order_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_admin: dict = Depends(get_current_admin),
 ):
     """
-    Отменить заказ.
+    Отменить заказ (только для администратора).
     
     Заказ можно отменить только если его статус 'new' или 'accepted'.
     
-    ⚠️ ВНИМАНИЕ: В production здесь должна быть проверка авторизации и права пользователя на отмену своего заказа!
+    Требует авторизации администратора.
     """
     from app.services.order_service import OrderService
 
@@ -470,27 +418,4 @@ async def cancel_order(
             detail=f"Заказ с ID '{order_id}' не найден",
         )
 
-    return OrderResponse(
-        id=order.id,
-        customer_name=order.customer_name,
-        customer_phone=order.customer_phone,
-        customer_address=order.customer_address,
-        total_amount=float(order.total_amount),
-        currency=order.currency,
-        status=order.status,
-        payment_status=order.payment_status,
-        payment_method=order.payment_method,
-        created_at=order.created_at.isoformat(),
-        updated_at=order.updated_at.isoformat(),
-        items=[
-            OrderItemResponse(
-                id=item.id,
-                product_id=item.product_id,
-                title_snapshot=item.title_snapshot,
-                quantity=item.quantity,
-                unit_price=float(item.unit_price),
-                total_price=float(item.total_price),
-            )
-            for item in order.items
-        ],
-    )
+    return _create_order_response(order)

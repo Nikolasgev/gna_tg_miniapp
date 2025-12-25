@@ -47,7 +47,16 @@ class PaymentService:
         # YooKassa требует строку с точкой как разделителем (например "350.00")
         # Форматируем Decimal в строку с 2 знаками после запятой
         amount_value = f"{float(order.total_amount):.2f}"
-        logger.info(f"Creating YooKassa payment for order {order.id}: amount={amount_value} {order.currency}")
+        
+        # Логируем детали суммы для отладки
+        delivery_info = ""
+        if order.order_metadata:
+            delivery_cost = order.order_metadata.get("delivery_cost", 0)
+            if delivery_cost:
+                delivery_info = f" (includes delivery: {delivery_cost} {order.currency})"
+        
+        logger.info(f"Creating YooKassa payment for order {order.id}: amount={amount_value} {order.currency}{delivery_info}")
+        logger.info(f"Order details: subtotal={order.subtotal_amount}, discount={order.discount_amount}, total={order.total_amount}")
         
         payment_data = {
             "amount": {

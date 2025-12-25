@@ -1,7 +1,4 @@
 """Конфигурация приложения."""
-import json
-from typing import Any
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,22 +33,6 @@ class Settings(BaseSettings):
         # В production это должно быть строго ограничено
     ]
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, v: Any) -> list[str]:
-        """Парсит cors_origins из строки в список."""
-        if isinstance(v, str):
-            # Пытаемся распарсить как JSON
-            try:
-                parsed = json.loads(v)
-                if isinstance(parsed, list):
-                    return parsed
-            except (json.JSONDecodeError, TypeError):
-                pass
-            # Если не JSON, разделяем по запятой
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v if isinstance(v, list) else []
-
     # Environment
     environment: str = "development"
 
@@ -76,22 +57,6 @@ class Settings(BaseSettings):
     pickup_address_city: str = "Москва"
     pickup_address_country: str = "Россия"
     pickup_address_street: str = "1-й проезд Марьиной Рощи"
-
-    @field_validator("pickup_address_coordinates", mode="before")
-    @classmethod
-    def parse_coordinates(cls, v: Any) -> list[float]:
-        """Парсит координаты из строки в список float."""
-        if isinstance(v, str):
-            try:
-                parsed = json.loads(v)
-                if isinstance(parsed, list):
-                    return [float(x) for x in parsed]
-            except (json.JSONDecodeError, TypeError, ValueError):
-                # Если не JSON, разделяем по запятой
-                parts = [float(x.strip()) for x in v.split(",") if x.strip()]
-                if len(parts) == 2:
-                    return parts
-        return v if isinstance(v, list) else [37.6000, 55.8000]
 
     model_config = SettingsConfigDict(
         env_file=".env",

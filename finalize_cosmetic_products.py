@@ -101,3 +101,6 @@ if __name__ == "__main__":
     print("🚀 Финальная настройка товаров...\n")
     asyncio.run(finalize_cosmetic_products())
 
+
+
+

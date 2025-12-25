@@ -69,6 +69,13 @@ class OrderService:
             if not product:
                 raise ValueError(f"Продукт с ID '{product_id}' не найден или неактивен")
 
+            # Проверяем наличие товара на складе
+            if product.stock_quantity is not None and product.stock_quantity < quantity:
+                raise ValueError(
+                    f"Недостаточно товара '{product.title}' на складе. "
+                    f"Доступно: {product.stock_quantity}, запрошено: {quantity}"
+                )
+
             # Используем цену из БД с учётом скидок (не доверяем клиенту)
             from app.services.product_service import ProductService
             product_service = ProductService(self.db)
@@ -96,12 +103,24 @@ class OrderService:
                     # Доплата умножается на количество товара
                     total_amount += category.surcharge * quantity
 
+            # Сохраняем вариации и заметку в metadata
+            item_metadata = {}
+            if selected_variations:
+                item_metadata["selected_variations"] = selected_variations
+            if item.get("note"):
+                item_metadata["note"] = item["note"]
+            # Сохраняем категории товара
+            if product.categories:
+                item_metadata["category_names"] = [cat.name for cat in product.categories]
+                item_metadata["category_surcharges"] = {cat.name: float(cat.surcharge) for cat in product.categories if cat.surcharge > 0}
+            
             order_items_data.append({
                 "product": product,
                 "title_snapshot": product.title,
                 "quantity": quantity,
                 "unit_price": unit_price,
                 "total_price": item_total,
+                "item_metadata": item_metadata if item_metadata else None,
             })
 
         # Рассчитываем стоимость доставки, если выбрана доставка
@@ -221,6 +240,7 @@ class OrderService:
 
         # Добавляем стоимость доставки к итоговой сумме
         subtotal_amount = total_amount + delivery_cost  # Сумма до применения скидок
+        logger.info(f"Order calculation: items_total={total_amount}, delivery_cost={delivery_cost}, subtotal={subtotal_amount}")
         
         # Применяем промокод, если указан
         promocode_obj = None
@@ -274,7 +294,8 @@ class OrderService:
         # Рассчитываем итоговую сумму
         total_discount = promocode_discount + loyalty_discount
         total_amount = max(Decimal("0"), subtotal_amount - total_discount)  # Не может быть отрицательным
-        
+        logger.info(f"Order final calculation: subtotal={subtotal_amount}, discount={total_discount}, final_total={total_amount} (includes delivery: {delivery_cost})")
+
         # Рассчитываем баллы, которые будут начислены за заказ (процент от суммы, по умолчанию 1%)
         loyalty_points_earned = Decimal("0")
         if user_telegram_id and total_amount > 0:
@@ -286,6 +307,12 @@ class OrderService:
                 order_amount=total_amount,
                 percent=loyalty_percent,
             )
+
+        # Сохраняем delivery_cost и delivery_method в order_metadata
+        order_metadata = {
+            "delivery_method": delivery_method,
+            "delivery_cost": float(delivery_cost),
+        }
 
         # Создаем заказ
         order = Order(
@@ -304,6 +331,7 @@ class OrderService:
             promocode_id=promocode_obj.id if promocode_obj else None,
             loyalty_points_earned=loyalty_points_earned,
             loyalty_points_spent=loyalty_points_spent if loyalty_points_spent > 0 else None,
+            order_metadata=order_metadata,
         )
 
         self.db.add(order)
@@ -318,6 +346,7 @@ class OrderService:
                 quantity=item_data["quantity"],
                 unit_price=item_data["unit_price"],
                 total_price=item_data["total_price"],
+                item_metadata=item_data.get("item_metadata"),
             )
             self.db.add(order_item)
 
@@ -454,7 +483,12 @@ class OrderService:
             )
 
         # Обновляем статус на 'cancelled'
+        old_status = order.status
         order.status = "cancelled"
+        
+        # Возвращаем товар на склад при отмене заказа
+        if old_status in ["new", "accepted"]:
+            await self._restore_stock(order)
         
         # Если оплата была онлайн и еще не обработана, можно также обновить статус оплаты
         # Но для простоты оставляем payment_status как есть
@@ -489,7 +523,17 @@ class OrderService:
             valid_statuses = ["new", "accepted", "preparing", "ready", "cancelled", "completed"]
             if status not in valid_statuses:
                 raise ValueError(f"Недопустимый статус: {status}. Допустимые: {', '.join(valid_statuses)}")
+            
+            old_status = order.status
             order.status = status
+            
+            # Автоматическое списание товара со склада при подтверждении заказа
+            if old_status != "accepted" and status == "accepted":
+                await self._deduct_stock(order)
+            
+            # Возврат товара на склад при отмене заказа
+            if old_status in ["new", "accepted"] and status == "cancelled":
+                await self._restore_stock(order)
 
         if payment_status is not None:
             # Валидация статуса оплаты
@@ -614,4 +658,77 @@ class OrderService:
         
         await self.db.commit()
         return True
+
+    async def _deduct_stock(self, order: Order) -> None:
+        """
+        Списать товар со склада при подтверждении заказа.
+        
+        Вызывается автоматически при изменении статуса заказа на 'accepted'.
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Загружаем элементы заказа с продуктами
+        from sqlalchemy.orm import selectinload
+        stmt = (
+            select(Order)
+            .options(selectinload(Order.items).selectinload(OrderItem.product))
+            .where(Order.id == order.id)
+        )
+        result = await self.db.execute(stmt)
+        order_with_items = result.scalar_one()
+        
+        for item in order_with_items.items:
+            product = item.product
+            if product.stock_quantity is not None:
+                # Проверяем, что товара достаточно (на случай параллельных заказов)
+                if product.stock_quantity < item.quantity:
+                    logger.warning(
+                        f"Недостаточно товара '{product.title}' на складе для заказа {order.id}. "
+                        f"Доступно: {product.stock_quantity}, требуется: {item.quantity}"
+                    )
+                    raise ValueError(
+                        f"Недостаточно товара '{product.title}' на складе. "
+                        f"Доступно: {product.stock_quantity}, требуется: {item.quantity}"
+                    )
+                
+                # Списываем товар со склада
+                product.stock_quantity -= item.quantity
+                logger.info(
+                    f"Списано {item.quantity} единиц товара '{product.title}' со склада. "
+                    f"Остаток: {product.stock_quantity}"
+                )
+        
+        await self.db.flush()
+
+    async def _restore_stock(self, order: Order) -> None:
+        """
+        Вернуть товар на склад при отмене заказа.
+        
+        Вызывается автоматически при отмене заказа со статусом 'new' или 'accepted'.
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Загружаем элементы заказа с продуктами
+        from sqlalchemy.orm import selectinload
+        stmt = (
+            select(Order)
+            .options(selectinload(Order.items).selectinload(OrderItem.product))
+            .where(Order.id == order.id)
+        )
+        result = await self.db.execute(stmt)
+        order_with_items = result.scalar_one()
+        
+        for item in order_with_items.items:
+            product = item.product
+            if product.stock_quantity is not None:
+                # Возвращаем товар на склад
+                product.stock_quantity += item.quantity
+                logger.info(
+                    f"Возвращено {item.quantity} единиц товара '{product.title}' на склад. "
+                    f"Остаток: {product.stock_quantity}"
+                )
+        
+        await self.db.flush()
 

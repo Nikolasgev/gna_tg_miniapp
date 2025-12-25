@@ -94,3 +94,6 @@ if __name__ == "__main__":
     print("🚀 Удаление пустых категорий...\n")
     asyncio.run(delete_empty_categories())
 
+
+
+

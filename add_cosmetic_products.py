@@ -248,3 +248,6 @@ if __name__ == "__main__":
     print("🚀 Добавление товаров косметики...\n")
     asyncio.run(add_cosmetic_products())
 
+
+
+

@@ -50,6 +50,8 @@ class ProductResponse(BaseModel):
     discount_price: float | None = None  # Цена со скидкой
     discount_valid_from: str | None = None  # Дата начала действия скидки (ISO format)
     discount_valid_until: str | None = None  # Дата окончания действия скидки (ISO format)
+    # Управление складом
+    stock_quantity: int | None = None  # Количество товара на складе (None = неограниченно)
 
 
 @router.get("/{business_slug}/products", response_model=List[ProductResponse])
@@ -78,8 +80,22 @@ async def get_products(
     min_price_decimal = Decimal(str(min_price)) if min_price is not None else None
     max_price_decimal = Decimal(str(max_price)) if max_price is not None else None
 
-    # В админке всегда запрашиваем свежие данные из БД (кэш отключен)
-    # Для мини-приложения можно включить кэш обратно
+    # Кеширование только для публичных запросов (не для админки)
+    cache_key = None
+    if not include_inactive:
+        cache_key = get_cache_key_products(
+            business_slug,
+            str(category) if category else None,
+            q,
+            str(min_price) if min_price else None,
+            str(max_price) if max_price else None,
+            page,
+            limit,
+        )
+        # Пытаемся получить из кеша
+        cached_result = await cache_service.get(cache_key)
+        if cached_result is not None:
+            return [ProductResponse(**item) for item in cached_result]
 
     from app.services.product_service import ProductService
 
@@ -110,11 +126,14 @@ async def get_products(
             discount_price=float(product.discount_price) if product.discount_price else None,
             discount_valid_from=product.discount_valid_from.isoformat() if product.discount_valid_from else None,
             discount_valid_until=product.discount_valid_until.isoformat() if product.discount_valid_until else None,
+            stock_quantity=product.stock_quantity,
         )
         for product in products
     ]
 
-    # Кэш отключен для админки - всегда возвращаем свежие данные из БД
+    # Сохраняем в кеш только для публичных запросов (TTL 5 минут)
+    if cache_key:
+        await cache_service.set(cache_key, [item.model_dump() for item in result], ttl=300)
 
     return result
 
@@ -159,6 +178,7 @@ async def get_product(
         discount_price=float(product_with_categories.discount_price) if product_with_categories.discount_price else None,
         discount_valid_from=product_with_categories.discount_valid_from.isoformat() if product_with_categories.discount_valid_from else None,
         discount_valid_until=product_with_categories.discount_valid_until.isoformat() if product_with_categories.discount_valid_until else None,
+        stock_quantity=product_with_categories.stock_quantity,
     )
 
 
@@ -179,6 +199,8 @@ class CreateProductRequest(BaseModel):
     discount_price: Decimal | None = None  # Цена со скидкой
     discount_valid_from: datetime | None = None  # Дата начала действия скидки
     discount_valid_until: datetime | None = None  # Дата окончания действия скидки
+    # Управление складом
+    stock_quantity: int | None = None  # Количество товара на складе (None = неограниченно)
 
 
 @router.post("/{business_slug}/products", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
@@ -224,6 +246,7 @@ async def create_product(
         discount_price=request.discount_price,
         discount_valid_from=request.discount_valid_from,
         discount_valid_until=request.discount_valid_until,
+        stock_quantity=request.stock_quantity,
     )
 
     # Очищаем кэш для продуктов этого бизнеса
@@ -245,6 +268,7 @@ async def create_product(
         discount_price=float(request.discount_price) if request.discount_price else None,
         discount_valid_from=request.discount_valid_from.isoformat() if request.discount_valid_from else None,
         discount_valid_until=request.discount_valid_until.isoformat() if request.discount_valid_until else None,
+        stock_quantity=request.stock_quantity,
     )
 
 
@@ -264,6 +288,8 @@ class UpdateProductRequest(BaseModel):
     discount_price: Decimal | None = None  # Цена со скидкой
     discount_valid_from: datetime | None = None  # Дата начала действия скидки
     discount_valid_until: datetime | None = None  # Дата окончания действия скидки
+    # Управление складом
+    stock_quantity: int | None = None  # Количество товара на складе (None = неограниченно)
 
 
 @router.put("/{product_id}", response_model=ProductResponse)
@@ -300,6 +326,7 @@ async def update_product(
         discount_price=request.discount_price,
         discount_valid_from=request.discount_valid_from,
         discount_valid_until=request.discount_valid_until,
+        stock_quantity=request.stock_quantity,
     )
 
     if not product:
@@ -342,6 +369,7 @@ async def update_product(
         discount_price=float(product_with_categories.discount_price) if product_with_categories.discount_price else None,
         discount_valid_from=product_with_categories.discount_valid_from.isoformat() if product_with_categories.discount_valid_from else None,
         discount_valid_until=product_with_categories.discount_valid_until.isoformat() if product_with_categories.discount_valid_until else None,
+        stock_quantity=product_with_categories.stock_quantity,
     )
 
 

@@ -68,3 +68,6 @@ if __name__ == "__main__":
     print("🚀 Деактивация старых товаров...\n")
     asyncio.run(deactivate_old_products())
 
+
+
+

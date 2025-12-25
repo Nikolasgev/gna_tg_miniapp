@@ -135,3 +135,8 @@ def get_cache_key_business(slug: str) -> str:
     """Генерация ключа кэша для бизнеса."""
     return f"business:{slug}"
 
+
+def get_cache_key_business_settings(slug: str) -> str:
+    """Генерация ключа кэша для настроек бизнеса."""
+    return f"business_settings:{slug}"
+
