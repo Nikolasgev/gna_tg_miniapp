@@ -11,9 +11,10 @@ async def get_current_admin(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict:
     """
-    Проверка токена администратора.
+    Проверка токена администратора/владельца бизнеса.
     
     Используется как dependency для защищенных эндпоинтов.
+    Возвращает payload с информацией о пользователе и бизнесе.
     """
     token = credentials.credentials
     
@@ -27,8 +28,9 @@ async def get_current_admin(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Проверяем роль
-    if payload.get("role") != "admin":
+    # Проверяем роль (owner или superadmin)
+    role = payload.get("role")
+    if role not in ["owner", "superadmin", "admin"]:  # admin для обратной совместимости
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Недостаточно прав доступа",

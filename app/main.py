@@ -69,15 +69,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS - в development режиме разрешаем ВСЕ origins для тестирования
-# ⚠️ ВНИМАНИЕ: Это только для разработки! В production нужно строго ограничить origins!
-if settings.is_development:
-    # Разрешаем все origins для удобства тестирования
+# CORS - настройка разрешенных origins
+# Если в CORS_ORIGINS указан ["*"], разрешаем все origins
+cors_origins = list(set(settings.cors_origins))
+if "*" in cors_origins or (len(cors_origins) == 1 and cors_origins[0] == "*"):
+    # Разрешаем все origins
     cors_origins = ["*"]
     # Нельзя использовать allow_credentials=True с allow_origins=["*"]
     allow_creds = False
 else:
-    cors_origins = list(set(settings.cors_origins))
+    # Используем указанные origins
     allow_creds = True
 
 app.add_middleware(

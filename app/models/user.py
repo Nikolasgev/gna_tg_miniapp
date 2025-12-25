@@ -14,6 +14,8 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    username: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)  # Логин для входа в админку
+    password_hash: Mapped[str | None] = mapped_column(String, nullable=True)  # Хешированный пароль
     firebase_uid: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)
     telegram_id: Mapped[int | None] = mapped_column(BigInteger, unique=True, nullable=True)
     email: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)

@@ -31,6 +31,7 @@ class Business(Base):
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
+    owner: Mapped["User"] = relationship("User", foreign_keys=[owner_id])
     products: Mapped[list["Product"]] = relationship("Product", back_populates="business")
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="business")
     promocodes: Mapped[list["Promocode"]] = relationship("Promocode", back_populates="business")
