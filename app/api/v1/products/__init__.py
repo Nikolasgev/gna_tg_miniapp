@@ -75,67 +75,94 @@ async def get_products(
     - page: номер страницы
     - limit: количество элементов на странице
     """
-    # Преобразуем min_price и max_price в Decimal для сервиса
-    from decimal import Decimal
-    min_price_decimal = Decimal(str(min_price)) if min_price is not None else None
-    max_price_decimal = Decimal(str(max_price)) if max_price is not None else None
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Преобразуем min_price и max_price в Decimal для сервиса
+        from decimal import Decimal
+        min_price_decimal = Decimal(str(min_price)) if min_price is not None else None
+        max_price_decimal = Decimal(str(max_price)) if max_price is not None else None
 
-    # Кеширование только для публичных запросов (не для админки)
-    cache_key = None
-    if not include_inactive:
-        cache_key = get_cache_key_products(
-            business_slug,
-            str(category) if category else None,
-            q,
-            str(min_price) if min_price else None,
-            str(max_price) if max_price else None,
-            page,
-            limit,
+        # Кеширование только для публичных запросов (не для админки)
+        cache_key = None
+        if not include_inactive:
+            try:
+                cache_key = get_cache_key_products(
+                    business_slug,
+                    str(category) if category else None,
+                    q,
+                    str(min_price) if min_price else None,
+                    str(max_price) if max_price else None,
+                    page,
+                    limit,
+                )
+                # Пытаемся получить из кеша
+                cached_result = await cache_service.get(cache_key)
+                if cached_result is not None:
+                    return [ProductResponse(**item) for item in cached_result]
+            except Exception as e:
+                logger.warning(f"Ошибка при работе с кешем (продолжаем без кеша): {e}")
+
+        from app.services.product_service import ProductService
+
+        service = ProductService(db)
+        products = await service.get_by_business_slug(
+            business_slug=business_slug,
+            category_id=category,
+            search_query=q,
+            min_price=min_price_decimal,
+            max_price=max_price_decimal,
+            page=page,
+            limit=limit,
+            include_inactive=include_inactive,
         )
-        # Пытаемся получить из кеша
-        cached_result = await cache_service.get(cache_key)
-        if cached_result is not None:
-            return [ProductResponse(**item) for item in cached_result]
 
-    from app.services.product_service import ProductService
+        result = []
+        for product in products:
+            try:
+                # Безопасно получаем category_ids
+                category_ids = []
+                if hasattr(product, 'categories') and product.categories:
+                    category_ids = [cat.id for cat in product.categories]
+                
+                result.append(
+                    ProductResponse(
+                        id=product.id,
+                        title=product.title,
+                        description=product.description,
+                        price=float(product.price),
+                        currency=product.currency,
+                        image_url=normalize_image_url(product.image_url),
+                        variations=product.variations,
+                        is_active=product.is_active,
+                        category_ids=category_ids,
+                        discount_percentage=float(product.discount_percentage) if product.discount_percentage else None,
+                        discount_price=float(product.discount_price) if product.discount_price else None,
+                        discount_valid_from=product.discount_valid_from.isoformat() if product.discount_valid_from else None,
+                        discount_valid_until=product.discount_valid_until.isoformat() if product.discount_valid_until else None,
+                        stock_quantity=product.stock_quantity,
+                    )
+                )
+            except Exception as e:
+                # Логируем ошибку, но продолжаем обработку других товаров
+                logger.error(f"Ошибка при обработке товара {product.id}: {e}", exc_info=True)
+                continue
 
-    service = ProductService(db)
-    products = await service.get_by_business_slug(
-        business_slug=business_slug,
-        category_id=category,
-        search_query=q,
-        min_price=min_price_decimal,
-        max_price=max_price_decimal,
-        page=page,
-        limit=limit,
-        include_inactive=include_inactive,
-    )
+        # Сохраняем в кеш только для публичных запросов (TTL 5 минут)
+        if cache_key:
+            try:
+                await cache_service.set(cache_key, [item.model_dump() for item in result], ttl=300)
+            except Exception as e:
+                logger.warning(f"Ошибка при сохранении в кеш (продолжаем): {e}")
 
-    result = [
-        ProductResponse(
-            id=product.id,
-            title=product.title,
-            description=product.description,
-            price=float(product.price),
-            currency=product.currency,
-            image_url=normalize_image_url(product.image_url),
-            variations=product.variations,
-            is_active=product.is_active,
-            category_ids=[cat.id for cat in product.categories],
-            discount_percentage=float(product.discount_percentage) if product.discount_percentage else None,
-            discount_price=float(product.discount_price) if product.discount_price else None,
-            discount_valid_from=product.discount_valid_from.isoformat() if product.discount_valid_from else None,
-            discount_valid_until=product.discount_valid_until.isoformat() if product.discount_valid_until else None,
-            stock_quantity=product.stock_quantity,
+        return result
+    except Exception as e:
+        logger.error(f"Ошибка в get_products для business_slug={business_slug}: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Ошибка при получении товаров: {str(e)}"
         )
-        for product in products
-    ]
-
-    # Сохраняем в кеш только для публичных запросов (TTL 5 минут)
-    if cache_key:
-        await cache_service.set(cache_key, [item.model_dump() for item in result], ttl=300)
-
-    return result
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
