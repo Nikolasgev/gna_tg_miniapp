@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Предзащита ВКР — Платформа «Магазин в Telegram»</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <style>
+        :root {
+            --corp-primary: #5B21B6;
+            --corp-secondary: #6B46C1;
+            --corp-dark: #3B0764;
+            --corp-light: #EDE9FE;
+        }
+        .reveal {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--corp-primary);
+            text-transform: none;
+        }
+        .reveal h1 { font-size: 1.6em; }
+        .reveal h2 { font-size: 1.3em; border-bottom: 2px solid var(--corp-secondary); padding-bottom: 0.2em; }
+        .reveal section.title-slide h1 { color: var(--corp-dark); }
+        .reveal .slide-number { color: var(--corp-primary); }
+        .reveal table {
+            font-size: 0.55em;
+            border-collapse: collapse;
+        }
+        .reveal th {
+            background: var(--corp-primary);
+            color: #fff;
+            padding: 0.35em 0.5em;
+        }
+        .reveal td {
+            border: 1px solid #ccc;
+            padding: 0.25em 0.4em;
+        }
+        .reveal tr:nth-child(even) { background: var(--corp-light); }
+        .reveal .small { font-size: 0.75em; }
+        .reveal .tiny { font-size: 0.6em; }
+        .reveal .mermaid { background: #fff; padding: 10px; border-radius: 8px; }
+        .reveal .pz-ref { font-size: 0.7em; color: var(--corp-secondary); margin-top: 0.5em; }
+        .reveal ul { margin-left: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Слайд 1: Титульный -->
+            <section class="title-slide" data-background-color="#EDE9FE">
+                <h1>Платформа «Магазин в Telegram»</h1>
+                <p class="small">Предзащита выпускной квалификационной работы</p>
+                <p style="margin-top: 2em;"><strong>Наименование учебного заведения</strong><br>Код и название специальности<br>Бизнес-ориентированный профиль</p>
+                <p style="margin-top: 1.5em;"><strong>Обучающийся:</strong> ФИО<br><strong>Руководитель ВКР:</strong> ФИО</p>
+                <p style="margin-top: 1em; font-size: 0.9em;">Дата предзащиты: 16.02–06.03.2026</p>
+            </section>
+
+            <!-- Слайд 2: Предметная область и проблемная зона -->
+            <section>
+                <h2>Введение. Предметная область и проблемная зона</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; font-size: 0.7em;">
+                    <div>
+                        <h3 style="font-size: 1em;">Предметная область</h3>
+                        <ul>
+                            <li>Розничная электронная коммерция (e-commerce) в мессенджере Telegram</li>
+                            <li>Подсистемы: Mini App (клиент), Backend API, админ-панель, интеграции (YooKassa, Telegram Bot)</li>
+                        </ul>
+                        <h3 style="font-size: 1em;">Текущие процессы (до внедрения)</h3>
+                        <ul>
+                            <li>Заявки по телефону и в мессенджерах вручную</li>
+                            <li>Учёт в таблицах, отсутствие единого каталога и аналитики</li>
+                        </ul>
+                    </div>
+                    <div class="mermaid">
+                        flowchart TD
+                            A[Традиционный канал продаж] --> B[Много шагов до покупки]
+                            A --> C[Переключение между приложениями]
+                            B --> D[Потеря конверсии]
+                            C --> D
+                    </div>
+                </div>
+                <p class="pz-ref">Подробнее: Пояснительная записка, гл. 1.1</p>
+            </section>
+
+            <!-- Слайд 3: Цель и задачи -->
+            <section>
+                <h2>Цель, постановка задачи и актуальность</h2>
+                <p><strong>Цель работы:</strong> разработка программной платформы для ведения интернет-продаж через Telegram Mini App с админ-панелью и интеграцией оплаты.</p>
+                <h3>Задачи</h3>
+                <ol style="font-size: 0.85em;">
+                    <li>Спроектировать архитектуру: Mini App, Backend API, БД, интеграции</li>
+                    <li>Реализовать каталог товаров, корзину и оформление заказа</li>
+                    <li>Реализовать приём онлайн-оплаты (YooKassa) и уведомления (Telegram Bot)</li>
+                    <li>Реализовать админ-панель: товары, категории, заказы, промокоды, аналитика</li>
+                    <li>Реализовать программу лояльности и многобизнесовую модель</li>
+                </ol>
+                <p class="pz-ref">Пояснительная записка, Введение и гл. 1</p>
+            </section>
+
+            <!-- Слайд 4: Актуальность (сравнение с аналогами) -->
+            <section>
+                <h2>Актуальность. Сравнение с аналогами</h2>
+                <table>
+                    <thead>
+                        <tr><th>Критерий</th><th>Разрабатываемый ПП</th><th>Конструкторы ботов</th><th>E-commerce + виджет TG</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Каталог в Mini App</td><td>Да</td><td>Часто ограничен</td><td>Через сайт</td></tr>
+                        <tr><td>Корзина и заказ</td><td>Да</td><td>Зависит от платформы</td><td>Вне Telegram</td></tr>
+                        <tr><td>Онлайн-оплата (YooKassa)</td><td>Да</td><td>По тарифу</td><td>Да</td></tr>
+                        <tr><td>Мультибизнес</td><td>Да</td><td>Не всегда</td><td>Отдельные проекты</td></tr>
+                        <tr><td>Кастомизация</td><td>Полная</td><td>Ограничена</td><td>Зависит от платформы</td></tr>
+                    </tbody>
+                </table>
+                <p class="small" style="margin-top: 0.5em;"><strong>Вывод:</strong> самостоятельная разработка даёт полный набор функций в одном решении при приемлемой стоимости владения.</p>
+                <p class="pz-ref">Пояснительная записка, гл. 1.3–1.4</p>
+            </section>
+
+            <!-- Слайд 5: Требования — роли и функции -->
+            <section>
+                <h2>Требования к разработке. Роли и функции</h2>
+                <p class="small">Функциональная схема: роли и базовые функции серверного приложения и постановки задач.</p>
+                <div class="mermaid">
+                    flowchart TB
+                        APP[Платформа tg_store<br/>Магазин в Telegram]
+                        APP --> ROLE1[Покупатель<br/>Mini App]
+                        APP --> ROLE2[Администратор<br/>Админ-панель]
+                        ROLE1 --> F1[Просмотр каталога]
+                        ROLE1 --> F2[Корзина, оформление заказа]
+                        ROLE1 --> F3[Оплата, история заказов]
+                        ROLE1 --> F4[Программа лояльности]
+                        ROLE2 --> G1[Управление товарами и категориями]
+                        ROLE2 --> G2[Приём и смена статусов заказов]
+                        ROLE2 --> G3[Промокоды, аналитика]
+                </div>
+                <p class="pz-ref">Пояснительная записка, гл. 1.2 (таблица распределения задач)</p>
+            </section>
+
+            <!-- Слайд 6: Входные данные -->
+            <section>
+                <h2>Описание входных данных</h2>
+                <table class="tiny">
+                    <thead>
+                        <tr><th>Логическое название</th><th>Физическое название</th><th>Тип данных</th><th>Размер</th><th>Ограничения</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Имя покупателя</td><td>customer_name</td><td>Строка</td><td>до 255</td><td>Обязательное</td></tr>
+                        <tr><td>Телефон покупателя</td><td>customer_phone</td><td>Строка</td><td>до 50</td><td>Обязательное, формат телефона</td></tr>
+                        <tr><td>Адрес доставки</td><td>customer_address</td><td>Строка</td><td>текст</td><td>Необязательное</td></tr>
+                        <tr><td>Способ оплаты</td><td>payment_method</td><td>Строка</td><td>cash / online</td><td>Обязательное</td></tr>
+                        <tr><td>Логин администратора</td><td>email / username</td><td>Строка</td><td>до 255</td><td>Обязательное</td></tr>
+                        <tr><td>Пароль администратора</td><td>password</td><td>Строка</td><td>—</td><td>Обязательное, проверка Firebase Auth</td></tr>
+                        <tr><td>Название товара</td><td>name</td><td>Строка</td><td>до 255</td><td>Обязательное</td></tr>
+                        <tr><td>Цена товара</td><td>price</td><td>Вещественное число</td><td>10,2</td><td>Обязательное, ≥ 0</td></tr>
+                        <tr><td>Код промокода</td><td>code</td><td>Строка</td><td>до 50</td><td>Уникальный в рамках бизнеса</td></tr>
+                    </tbody>
+                </table>
+                <p class="pz-ref">Пояснительная записка, гл. 1.1.5; модели backend (Order, Product, Promocode)</p>
+            </section>
+
+            <!-- Слайд 7: Платформы и технологии -->
+            <section>
+                <h2>Платформы и технологии</h2>
+                <table class="tiny">
+                    <thead>
+                        <tr><th>Вид приложения</th><th>Платформа / версия</th><th>Технологии</th><th>Библиотеки</th><th>Обоснование</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Web-приложение (Mini App)</td><td>Flutter 3.x, Web</td><td>Dart, Bloc</td><td>go_router, dio, hive</td><td>Единая кодовая база, работа в Telegram WebView</td></tr>
+                        <tr><td>Web-приложение (админ-панель)</td><td>Flutter 3.x, Web</td><td>Dart, Bloc</td><td>Firebase Auth, dio</td><td>Единая кодовая база с Mini App, быстрая разработка</td></tr>
+                        <tr><td>Серверное приложение (API)</td><td>Python 3.11+</td><td>FastAPI, AsyncIO</td><td>SQLAlchemy 2, Pydantic, httpx</td><td>Высокая производительность, типизация, OpenAPI</td></tr>
+                        <tr><td>База данных</td><td>PostgreSQL 15+</td><td>SQL</td><td>asyncpg, Alembic</td><td>Надёжность, JSON, миграции</td></tr>
+                        <tr><td>Кэш</td><td>Redis 7</td><td>—</td><td>redis, hiredis</td><td>Кэширование каталога, сессий</td></tr>
+                        <tr><td>Интеграции</td><td>—</td><td>REST, Webhook</td><td>YooKassa API, python-telegram-bot</td><td>Оплата и уведомления в Telegram</td></tr>
+                    </tbody>
+                </table>
+                <p class="pz-ref">Пояснительная записка, гл. 2 (проектирование); pubspec.yaml, requirements.txt</p>
+            </section>
+
+            <!-- Слайд 8: Архитектура -->
+            <section>
+                <h2>Архитектура программного продукта</h2>
+                <p class="small">Взаимодействие: Mini App и админ-панель обращаются к REST API; API использует БД, Redis, YooKassa и Telegram Bot для платежей и уведомлений.</p>
+                <div class="mermaid">
+                    flowchart TB
+                        subgraph Frontend["Frontend"]
+                            MA[Telegram Mini App<br/>Flutter Web]
+                            AP[Admin Panel<br/>Flutter Web]
+                        end
+                        subgraph Backend["Backend"]
+                            API[REST API<br/>FastAPI]
+                        end
+                        subgraph Data["Данные"]
+                            PG[(PostgreSQL)]
+                            RD[(Redis)]
+                        end
+                        subgraph Ext["Внешние сервисы"]
+                            YK[YooKassa]
+                            TB[Telegram Bot API]
+                        end
+                        MA -->|HTTPS| API
+                        AP -->|HTTPS| API
+                        API --> PG
+                        API --> RD
+                        API --> YK
+                        API --> TB
+                </div>
+                <p class="pz-ref">Пояснительная записка, гл. 2; presentation_diagrams/slide_04_architecture.mmd</p>
+            </section>
+
+            <!-- Слайд 9: Структурная схема -->
+            <section>
+                <h2>Структурная схема</h2>
+                <p class="small">Иерархия основных модулей: backend (main.py → api, models, services), frontend (mini_app / admin_panel → presentation, data, domain).</p>
+                <div class="mermaid">
+                    flowchart TB
+                        subgraph BE["backend/app"]
+                            MAIN[main.py]
+                            API[api/v1]
+                            MOD[models]
+                            SVC[services]
+                            MAIN --> API --> MOD
+                            API --> SVC
+                        end
+                        subgraph FE["frontend/lib"]
+                            MINI[mini_app]
+                            ADM[admin_panel]
+                            CORE[core]
+                            MINI --> MINI_P[presentation]
+                            MINI --> MINI_D[data]
+                            ADM --> ADM_P[presentation]
+                            ADM --> ADM_D[data]
+                        end
+                </div>
+                <p class="pz-ref">Репозиторий: backend/app, frontend/lib</p>
+            </section>
+
+            <!-- Слайд 10: Описание элементов структурной схемы -->
+            <section>
+                <h2>Описание элементов структурной схемы</h2>
+                <table class="tiny">
+                    <thead>
+                        <tr><th>Название</th><th>Описание</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>main.py</td><td>Точка входа backend, FastAPI, CORS, планировщик задач</td></tr>
+                        <tr><td>api/v1</td><td>Маршруты REST API: businesses, products, orders, payments, categories, promocodes, loyalty, analytics, admin, telegram, images, delivery, addresses</td></tr>
+                        <tr><td>models</td><td>SQLAlchemy-модели: Business, Product, Category, Order, OrderItem, Payment, Promocode, LoyaltyAccount</td></tr>
+                        <tr><td>services</td><td>Бизнес-логика: OrderService, ProductService, PaymentService, LoyaltyService, AdminService</td></tr>
+                        <tr><td>mini_app/main.dart</td><td>Точка входа Mini App (Flutter Web)</td></tr>
+                        <tr><td>admin_panel/main.dart</td><td>Точка входа админ-панели (Flutter Web)</td></tr>
+                        <tr><td>presentation</td><td>Экраны (screens), виджеты, BLoC, роутинг (go_router)</td></tr>
+                        <tr><td>core</td><td>Сеть (api_client), темы, конфигурация, общие утилиты</td></tr>
+                    </tbody>
+                </table>
+                <p class="pz-ref">Пояснительная записка, проектирование; структура репозитория</p>
+            </section>
+
+            <!-- Слайд 11: Демонстрация ПП -->
+            <section>
+                <h2>Демонстрация программного продукта</h2>
+                <p class="small">Ключевые функции в соответствии с функциональными задачами ВКР:</p>
+                <ul style="font-size: 0.85em;">
+                    <li><strong>Mini App:</strong> каталог товаров, фильтрация, корзина, оформление заказа (имя, телефон, адрес), выбор способа оплаты (онлайн / при получении), история заказов, программа лояльности</li>
+                    <li><strong>Админ-панель:</strong> вход (Firebase Auth), управление товарами и категориями, приём заказов и смена статусов, промокоды, аналитика</li>
+                    <li><strong>Интеграции:</strong> оплата (YooKassa), уведомления в Telegram (бот)</li>
+                </ul>
+                <p style="margin-top: 1em;"><strong>Рекомендация:</strong> подготовить короткие видео (1–2 мин) по сценарию «покупатель» и «администратор» для офлайн-демо.</p>
+                <p class="pz-ref" style="margin-top: 1em;">Пояснительная записка, гл. 1–2; репозиторий проекта</p>
+            </section>
+
+            <!-- Слайд 12: Завершающий -->
+            <section data-background-color="#EDE9FE">
+                <h2>Спасибо за внимание</h2>
+                <p>Готов ответить на вопросы комиссии.</p>
+                <p class="small" style="margin-top: 2em;">Пояснительная записка: Введение, Глава 1 (аналитическая часть)<br>Программный продукт: альфа- / бета-версия</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/zoom/zoom.js"></script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#EDE9FE',
+                primaryTextColor: '#3B0764',
+                primaryBorderColor: '#5B21B6',
+                lineColor: '#6B46C1',
+                secondaryColor: '#EDE9FE'
+            }
+        });
+
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            width: 1200,
+            height: 700,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2,
+            plugins: [ RevealNotes, RevealZoom ]
+        });
+
+        async function renderMermaid() {
+            const diagrams = document.querySelectorAll('.mermaid');
+            for (const el of diagrams) {
+                if (el.getAttribute('data-processed')) continue;
+                try {
+                    const id = 'mermaid-' + Math.random().toString(36).slice(2);
+                    const code = el.textContent;
+                    const { svg } = await mermaid.render(id, code);
+                    el.innerHTML = svg;
+                    el.setAttribute('data-processed', 'true');
+                } catch (e) {
+                    el.innerHTML = '<p style="color:red">Ошибка диаграммы</p>';
+                }
+            }
+        }
+
+        Reveal.on('ready', renderMermaid);
+        Reveal.on('slidechanged', renderMermaid);
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Flutter
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
+frontend/.idea/
+frontend/*.iml
+frontend/.vscode/
+frontend/.settings/
+frontend/.metadata
+frontend/.gradle/
+frontend/.fvm/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (опционально - можно закомментировать, если нужны тестовые изображения)
+# backend/uploads/images/*
+# !backend/uploads/images/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Backend specific
+backend/alembic.ini.bak
+backend/*.pyc
+backend/static_mini_app/
+
+# Frontend specific
+frontend/temp_test/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

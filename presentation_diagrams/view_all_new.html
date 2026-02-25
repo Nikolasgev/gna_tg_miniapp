@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграммы для презентации - Все визуализации</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        // Глобальная конфигурация Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                // Глобальные цвета для xychart-beta
+                xyChart: {
+                    plotColorPalette: '#4C1D95,#27AE60,#F39C12,#E74C3C'
+                },
+                // Общие цвета темы
+                primaryColor: '#4C1D95',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#3B1A7A',
+                lineColor: '#4C1D95',
+                secondaryColor: '#5B21B6',
+                tertiaryColor: '#6B46C1'
+            },
+            // Дополнительные настройки для xychart
+            xyChart: {
+                width: 900,
+                height: 500
+            }
+        });
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 4px solid #4C1D95;
+            padding-bottom: 20px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .slide-section {
+            background: #f8f9fa;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 5px solid #4C1D95;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2::before {
+            content: "📊";
+            font-size: 1.2em;
+        }
+        
+        .diagram-container {
+            margin: 25px 0;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .mermaid {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Принудительное изменение цветов столбцов через CSS */
+        .mermaid svg rect[fill*="#FFF4DD"],
+        .mermaid svg rect[fill*="#fff4dd"],
+        .mermaid svg rect[fill*="#FEF5E7"],
+        .mermaid svg rect[fill*="#fef5e7"],
+        .mermaid svg rect[fill*="#E8F4F8"],
+        .mermaid svg rect[fill*="#e8f4f8"],
+        .mermaid svg rect[fill*="#D5F4E6"],
+        .mermaid svg rect[fill*="#d5f4e6"] {
+            fill: #4C1D95 !important;
+        }
+        
+        /* Для столбцов в xychart-beta */
+        .mermaid svg g[class*="bar"] rect,
+        .mermaid svg rect[class*="bar"],
+        .mermaid svg .bar {
+            fill: #4C1D95 !important;
+        }
+        
+        .description {
+            margin-top: 15px;
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.9em;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .export-note {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .export-note strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .export-note a {
+            color: #ffd700;
+            text-decoration: underline;
+        }
+        
+        .export-note a:hover {
+            color: #ffed4e;
+        }
+        
+        .color-info {
+            background: #e7f3ff;
+            border-left: 4px solid #4C1D95;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .color-info strong {
+            color: #4C1D95;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Диаграммы для презентации дипломного проекта</h1>
+        <p class="subtitle">Все визуализации с правильными цветами</p>
+        
+        <div class="export-note">
+            <strong>💡 Как экспортировать:</strong>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Откройте файл .mmd в текстовом редакторе</li>
+                <li>Скопируйте содержимое</li>
+                <li>Вставьте на <a href="https://mermaid.live" target="_blank">mermaid.live</a></li>
+                <li>Экспортируйте в PNG или SVG</li>
+            </ol>
+        </div>
+
+        <div class="color-info">
+            <strong>🎨 Цветовая схема:</strong> Все бежевые цвета (#FFF4DD, #FEF5E7 и т.д.) заменены на темно-фиолетовый (#4C1D95). Если столбцы все еще бежевые, используйте Python скрипт <code>generate_charts.py</code>.
+        </div>
+
+        <!-- СЛАЙД 2: Актуальность -->
+        <div class="slide-section">
+            <h2>СЛАЙД 2: Актуальность и проблема</h2>
+            
+            <div class="diagram-container">
+                <h3>Рост рынка e-commerce</h3>
+                <div class="mermaid">
+xychart-beta
+    title "Рост рынка электронной коммерции в России (млрд руб.)"
+    x-axis [2019, 2020, 2021, 2022, 2023, 2024]
+    y-axis "Объем рынка (млрд руб.)" 0 --> 5000
+    bar [1800, 2500, 3200, 3800, 4200, 4800]
+    ---
+    config:
+      themeVariables:
+        xyChart:
+          plotColorPalette: "#4C1D95"
+                </div>
+                <div class="description">Файл: slide_02_ecommerce_growth.mmd | Цвет: Темно-фиолетовый (#4C1D95)</div>
+            </div>
+
+            <div class="diagram-container">
+                <h3>Проблемы традиционных интернет-магазинов</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#E74C3C', 'primaryTextColor':'#fff', 'primaryBorderColor':'#C0392B', 'lineColor':'#E74C3C', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart TD
+    A["Традиционный<br/>интернет-магазин"] --> B["Проблема 1:<br/>Множество шагов<br/>до покупки"]
+    A --> C["Проблема 2:<br/>Переключение<br/>между приложениями"]
+    A --> D["Проблема 3:<br/>Сложность<br/>для пользователя"]
+    
+    B --> E["Потеря<br/>конверсии"]
+    C --> E
+    D --> E
+    
+    style A fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    style B fill:#5B21B6,stroke:#E74C3C,stroke-width:2px,color:#fff
+    style C fill:#5B21B6,stroke:#E74C3C,stroke-width:2px,color:#fff
+    style D fill:#5B21B6,stroke:#E74C3C,stroke-width:2px,color:#fff
+    style E fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+                </div>
+                <div class="description">Файл: slide_02_problems.mmd</div>
+            </div>
+
+            <div class="diagram-container">
+                <h3>Статистика использования Telegram</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#0088cc', 'primaryTextColor':'#fff', 'primaryBorderColor':'#006699', 'lineColor':'#0088cc', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+pie title "Аудитория Telegram в России"
+    "Активные пользователи" : 70
+    "Потенциальные клиенты" : 30
+                </div>
+                <div class="description">Файл: slide_02_telegram_stats.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 3: Цель и задачи -->
+        <div class="slide-section">
+            <h2>СЛАЙД 3: Цель и задачи проекта</h2>
+            
+            <div class="diagram-container">
+                <h3>Иерархия целей и задач</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#27AE60', 'primaryTextColor':'#fff', 'primaryBorderColor':'#229954', 'lineColor':'#27AE60', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart TD
+    A["ЦЕЛЬ:<br/>Повышение эффективности<br/>обслуживания клиентов<br/>и упрощение процесса<br/>взаимодействия"] --> B["Задача 1:<br/>Анализ предметной<br/>области"]
+    A --> C["Задача 2:<br/>Изучение<br/>бизнес-процессов"]
+    A --> D["Задача 3:<br/>Проектирование<br/>архитектуры"]
+    A --> E["Задача 4:<br/>Разработка<br/>REST API"]
+    A --> F["Задача 5:<br/>Разработка Mini App<br/>и бота"]
+    A --> G["Задача 6:<br/>Тестирование"]
+    A --> H["Задача 7:<br/>Экономическое<br/>обоснование"]
+    A --> I["Задача 8:<br/>Оценка<br/>эффективности"]
+    
+    style A fill:#27AE60,stroke:#229954,stroke-width:4px,color:#fff,font-size:18px
+    style B fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style C fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style D fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style E fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style F fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style G fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style H fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style I fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+                </div>
+                <div class="description">Файл: slide_03_goals_tasks.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 4: Архитектура -->
+        <div class="slide-section">
+            <h2>СЛАЙД 4: Архитектура системы</h2>
+            
+            <div class="diagram-container">
+                <h3>Диаграмма архитектуры</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#6B46C1', 'primaryTextColor':'#fff', 'primaryBorderColor':'#5B21B6', 'lineColor':'#6B46C1', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart TB
+    subgraph Frontend["Frontend Layer"]
+        MA["Telegram Mini App<br/>(Flutter Web)"]
+        AP["Admin Panel<br/>(Flutter Web)"]
+    end
+    
+    subgraph Backend["Backend Layer"]
+        API["REST API<br/>(FastAPI)"]
+    end
+    
+    subgraph Database["Data Layer"]
+        PG["PostgreSQL<br/>(Основная БД)"]
+        RD["Redis<br/>(Кэш)"]
+    end
+    
+    subgraph Integrations["Integrations"]
+        YK["YooKassa<br/>(Платежи)"]
+        YD["Яндекс.Доставка<br/>(Доставка)"]
+        TB["Telegram Bot API<br/>(Уведомления)"]
+        DD["DaData<br/>(Адреса)"]
+    end
+    
+    MA -->|REST API| API
+    AP -->|REST API| API
+    API -->|Запросы| PG
+    API -->|Кэш| RD
+    API -->|Интеграция| YK
+    API -->|Интеграция| YD
+    API -->|Интеграция| TB
+    API -->|Интеграция| DD
+    
+    style Frontend fill:#4A90E2,stroke:#357ABD,stroke-width:3px,color:#fff
+    style Backend fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    style Database fill:#F39C12,stroke:#E67E22,stroke-width:3px,color:#fff
+    style Integrations fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    style MA fill:#5B21B6,stroke:#4A90E2,stroke-width:2px,color:#fff
+    style AP fill:#5B21B6,stroke:#4A90E2,stroke-width:2px,color:#fff
+    style API fill:#5B21B6,stroke:#27AE60,stroke-width:2px,color:#fff
+    style PG fill:#5B21B6,stroke:#F39C12,stroke-width:2px,color:#fff
+    style RD fill:#5B21B6,stroke:#F39C12,stroke-width:2px,color:#fff
+                </div>
+                <div class="description">Файл: slide_04_architecture.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 6: Модель данных -->
+        <div class="slide-section">
+            <h2>СЛАЙД 6: Модель данных</h2>
+            
+            <div class="diagram-container">
+                <h3>ER-диаграмма</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#34495E', 'primaryTextColor':'#fff', 'primaryBorderColor':'#2C3E50', 'lineColor':'#34495E', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+erDiagram
+    USERS ||--o{ ORDERS : places
+    BUSINESSES ||--o{ PRODUCTS : has
+    BUSINESSES ||--o{ ORDERS : receives
+    BUSINESSES ||--o{ CATEGORIES : has
+    PRODUCTS }o--|| CATEGORIES : belongs_to
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : included_in
+    ORDERS ||--o| PAYMENTS : has
+    BUSINESSES ||--o{ PROMOCODES : has
+    
+    USERS {
+        uuid id PK
+        bigint telegram_id
+        string email
+        string role
+    }
+    
+    BUSINESSES {
+        uuid id PK
+        string slug UK
+        string name
+        string description
+    }
+    
+    PRODUCTS {
+        uuid id PK
+        uuid business_id FK
+        string name
+        decimal price
+        string description
+    }
+    
+    CATEGORIES {
+        uuid id PK
+        uuid business_id FK
+        string name
+    }
+    
+    ORDERS {
+        uuid id PK
+        uuid user_id FK
+        uuid business_id FK
+        decimal total_amount
+        string status
+    }
+    
+    ORDER_ITEMS {
+        uuid id PK
+        uuid order_id FK
+        uuid product_id FK
+        int quantity
+        decimal price
+    }
+    
+    PAYMENTS {
+        uuid id PK
+        uuid order_id FK
+        string status
+        decimal amount
+    }
+    
+    PROMOCODES {
+        uuid id PK
+        uuid business_id FK
+        string code
+        decimal discount
+    }
+                </div>
+                <div class="description">Файл: slide_06_er_diagram.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 7: Функции -->
+        <div class="slide-section">
+            <h2>СЛАЙД 7: Основные функции системы</h2>
+            
+            <div class="diagram-container">
+                <h3>Пользовательский сценарий</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#3498DB', 'primaryTextColor':'#fff', 'primaryBorderColor':'#2980B9', 'lineColor':'#3498DB', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart LR
+    A["1. Открытие<br/>Mini App"] --> B["2. Просмотр<br/>каталога"]
+    B --> C["3. Добавление<br/>в корзину"]
+    C --> D["4. Оформление<br/>заказа"]
+    D --> E["5. Оплата<br/>(YooKassa)"]
+    E --> F["6. Получение<br/>уведомления"]
+    
+    style A fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    style B fill:#5DADE2,stroke:#3498DB,stroke-width:2px,color:#fff
+    style C fill:#5DADE2,stroke:#3498DB,stroke-width:2px,color:#fff
+    style D fill:#5DADE2,stroke:#3498DB,stroke-width:2px,color:#fff
+    style E fill:#5DADE2,stroke:#3498DB,stroke-width:2px,color:#fff
+    style F fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+                </div>
+                <div class="description">Файл: slide_07_user_flow.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 8: Статус -->
+        <div class="slide-section">
+            <h2>СЛАЙД 8: Реализованные компоненты</h2>
+            
+            <div class="diagram-container">
+                <h3>Прогресс реализации</h3>
+                <div class="mermaid">
+xychart-beta
+    title "Прогресс реализации компонентов (%)"
+    x-axis ["Backend API", "Telegram Mini App", "Админ-панель", "Telegram-бот", "Интеграции"]
+    y-axis "Процент выполнения" 0 --> 100
+    bar [90, 85, 80, 40, 95]
+    ---
+    config:
+      themeVariables:
+        xyChart:
+          plotColorPalette: "#27AE60,#27AE60,#27AE60,#F39C12,#27AE60"
+                </div>
+                <div class="description">Файл: slide_08_progress_bars.mmd | Цвета: Зеленый (готовые), Оранжевый (в разработке)</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 9: Демонстрация -->
+        <div class="slide-section">
+            <h2>СЛАЙД 9: Демонстрация работы системы</h2>
+            
+            <div class="diagram-container">
+                <h3>Схема работы системы</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#8E44AD', 'primaryTextColor':'#fff', 'primaryBorderColor':'#7D3C98', 'lineColor':'#8E44AD', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+sequenceDiagram
+    participant U as Пользователь
+    participant MA as Mini App
+    participant API as Backend API
+    participant DB as База данных
+    participant PAY as YooKassa
+    participant BOT as Telegram Bot
+    
+    U->>MA: Открывает приложение
+    MA->>API: Запрос каталога
+    API->>DB: Получение товаров
+    DB-->>API: Данные товаров
+    API-->>MA: JSON ответ
+    MA-->>U: Отображение каталога
+    
+    U->>MA: Добавляет в корзину
+    U->>MA: Оформляет заказ
+    MA->>API: Создание заказа
+    API->>DB: Сохранение заказа
+    DB-->>API: Подтверждение
+    API->>PAY: Создание платежа
+    PAY-->>API: Ссылка на оплату
+    API-->>MA: Ссылка на оплату
+    MA-->>U: Переход на оплату
+    
+    U->>PAY: Оплата
+    PAY->>API: Webhook (успех)
+    API->>DB: Обновление статуса
+    API->>BOT: Отправка уведомления
+    BOT-->>U: Уведомление в Telegram
+                </div>
+                <div class="description">Файл: slide_09_system_flow.mmd</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 10: Экономика -->
+        <div class="slide-section">
+            <h2>СЛАЙД 10: Экономическое обоснование</h2>
+            
+            <div class="diagram-container">
+                <h3>График окупаемости</h3>
+                <div class="mermaid">
+xychart-beta
+    title "График окупаемости проекта (месяцы)"
+    x-axis [0, 1, 2, 3, 4, 5, 6]
+    y-axis "Прибыль (тыс. руб.)" -200 --> 400
+    line [0, -150, -100, -50, 0, 100, 250]
+    ---
+    config:
+      themeVariables:
+        xyChart:
+          plotColorPalette: "#4C1D95"
+                </div>
+                <div class="description">Файл: slide_10_roi.mmd | Цвет: Темно-фиолетовый (#4C1D95)</div>
+            </div>
+
+            <div class="diagram-container">
+                <h3>Сравнение с альтернативами</h3>
+                <div class="mermaid">
+xychart-beta
+    title "Сравнение стоимости решений (тыс. руб.)"
+    x-axis ["Наше решение", "Готовые платформы", "Разработка с нуля"]
+    y-axis "Стоимость (тыс. руб.)" 0 --> 500
+    bar [150, 300, 450]
+    ---
+    config:
+      themeVariables:
+        xyChart:
+          plotColorPalette: "#27AE60,#F39C12,#E74C3C"
+                </div>
+                <div class="description">Файл: slide_10_alternatives.mmd | Цвета: Зеленый, Оранжевый, Красный</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 11: Результаты -->
+        <div class="slide-section">
+            <h2>СЛАЙД 11: Ожидаемые результаты</h2>
+            
+            <div class="diagram-container">
+                <h3>Метрики эффективности</h3>
+                <div class="mermaid">
+xychart-beta
+    title "Метрики эффективности (улучшение в %)"
+    x-axis ["Качество обслуживания", "Скорость оформления", "Снижение нагрузки", "Общая эффективность"]
+    y-axis "Улучшение (%)" 0 --> 50
+    bar [35, 45, 40, 30]
+    ---
+    config:
+      themeVariables:
+        xyChart:
+          plotColorPalette: "#27AE60"
+                </div>
+                <div class="description">Файл: slide_11_metrics.mmd | Цвет: Зеленый (#27AE60)</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 12: Заключение -->
+        <div class="slide-section">
+            <h2>СЛАЙД 12: Заключение</h2>
+            
+            <div class="diagram-container">
+                <h3>Итоговое решение</h3>
+                <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#27AE60', 'primaryTextColor':'#fff', 'primaryBorderColor':'#229954', 'lineColor':'#27AE60', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart TB
+    subgraph Solution["Итоговое решение"]
+        MA["✅ Telegram Mini App"]
+        API["✅ Backend API"]
+        BOT["✅ Telegram Bot"]
+        INT["✅ Интеграции"]
+    end
+    
+    Solution --> Result["Результат:<br/>Полнофункциональная<br/>система продаж"]
+    
+    style Solution fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    style Result fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style MA fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style API fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style BOT fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+    style INT fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+                </div>
+                <div class="description">Файл: slide_12_final_architecture.mmd</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+            <p style="color: #6c757d; font-size: 1.1em;">
+                <strong>Все диаграммы готовы к использованию!</strong><br>
+                Если столбцы все еще бежевые, используйте Python скрипт <code>generate_charts.py</code>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

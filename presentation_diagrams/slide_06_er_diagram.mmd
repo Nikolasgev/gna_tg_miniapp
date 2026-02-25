@@ -1,0 +1,70 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#34495E', 'primaryTextColor':'#fff', 'primaryBorderColor':'#2C3E50', 'lineColor':'#34495E', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+erDiagram
+    USERS ||--o{ ORDERS : places
+    BUSINESSES ||--o{ PRODUCTS : has
+    BUSINESSES ||--o{ ORDERS : receives
+    BUSINESSES ||--o{ CATEGORIES : has
+    PRODUCTS }o--|| CATEGORIES : belongs_to
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : included_in
+    ORDERS ||--o| PAYMENTS : has
+    BUSINESSES ||--o{ PROMOCODES : has
+    
+    USERS {
+        uuid id PK
+        bigint telegram_id
+        string email
+        string role
+    }
+    
+    BUSINESSES {
+        uuid id PK
+        string slug UK
+        string name
+        string description
+    }
+    
+    PRODUCTS {
+        uuid id PK
+        uuid business_id FK
+        string name
+        decimal price
+        string description
+    }
+    
+    CATEGORIES {
+        uuid id PK
+        uuid business_id FK
+        string name
+    }
+    
+    ORDERS {
+        uuid id PK
+        uuid user_id FK
+        uuid business_id FK
+        decimal total_amount
+        string status
+    }
+    
+    ORDER_ITEMS {
+        uuid id PK
+        uuid order_id FK
+        uuid product_id FK
+        int quantity
+        decimal price
+    }
+    
+    PAYMENTS {
+        uuid id PK
+        uuid order_id FK
+        string status
+        decimal amount
+    }
+    
+    PROMOCODES {
+        uuid id PK
+        uuid business_id FK
+        string code
+        decimal discount
+    }
+

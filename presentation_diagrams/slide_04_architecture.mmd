@@ -1,0 +1,42 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#6B46C1', 'primaryTextColor':'#fff', 'primaryBorderColor':'#5B21B6', 'lineColor':'#6B46C1', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+flowchart TB
+    subgraph Frontend["Frontend Layer"]
+        MA["Telegram Mini App<br/>(Flutter Web)"]
+        AP["Admin Panel<br/>(Flutter Web)"]
+    end
+    
+    subgraph Backend["Backend Layer"]
+        API["REST API<br/>(FastAPI)"]
+    end
+    
+    subgraph Database["Data Layer"]
+        PG["PostgreSQL<br/>(Основная БД)"]
+        RD["Redis<br/>(Кэш)"]
+    end
+    
+    subgraph Integrations["Integrations"]
+        YK["YooKassa<br/>(Платежи)"]
+        YD["Яндекс.Доставка<br/>(Доставка)"]
+        TB["Telegram Bot API<br/>(Уведомления)"]
+        DD["DaData<br/>(Адреса)"]
+    end
+    
+    MA -->|REST API| API
+    AP -->|REST API| API
+    API -->|Запросы| PG
+    API -->|Кэш| RD
+    API -->|Интеграция| YK
+    API -->|Интеграция| YD
+    API -->|Интеграция| TB
+    API -->|Интеграция| DD
+    
+    style Frontend fill:#4A90E2,stroke:#357ABD,stroke-width:3px,color:#fff
+    style Backend fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    style Database fill:#F39C12,stroke:#E67E22,stroke-width:3px,color:#fff
+    style Integrations fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    style MA fill:#5B21B6,stroke:#4A90E2,stroke-width:2px,color:#fff
+    style AP fill:#5B21B6,stroke:#4A90E2,stroke-width:2px,color:#fff
+    style API fill:#5B21B6,stroke:#27AE60,stroke-width:2px,color:#fff
+    style PG fill:#5B21B6,stroke:#F39C12,stroke-width:2px,color:#fff
+    style RD fill:#5B21B6,stroke:#F39C12,stroke-width:2px,color:#fff
+

@@ -1,0 +1,32 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#8E44AD', 'primaryTextColor':'#fff', 'primaryBorderColor':'#7D3C98', 'lineColor':'#8E44AD', 'secondaryColor':'#5B21B6', 'tertiaryColor':'#6B46C1'}}}%%
+sequenceDiagram
+    participant U as Пользователь
+    participant MA as Mini App
+    participant API as Backend API
+    participant DB as База данных
+    participant PAY as YooKassa
+    participant BOT as Telegram Bot
+    
+    U->>MA: Открывает приложение
+    MA->>API: Запрос каталога
+    API->>DB: Получение товаров
+    DB-->>API: Данные товаров
+    API-->>MA: JSON ответ
+    MA-->>U: Отображение каталога
+    
+    U->>MA: Добавляет в корзину
+    U->>MA: Оформляет заказ
+    MA->>API: Создание заказа
+    API->>DB: Сохранение заказа
+    DB-->>API: Подтверждение
+    API->>PAY: Создание платежа
+    PAY-->>API: Ссылка на оплату
+    API-->>MA: Ссылка на оплату
+    MA-->>U: Переход на оплату
+    
+    U->>PAY: Оплата
+    PAY->>API: Webhook (успех)
+    API->>DB: Обновление статуса
+    API->>BOT: Отправка уведомления
+    BOT-->>U: Уведомление в Telegram
+

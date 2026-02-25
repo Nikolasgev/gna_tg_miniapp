@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграммы для презентации</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'base' });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .slide-section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .diagram-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        .mermaid {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .description {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        .export-note {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Диаграммы для презентации дипломного проекта</h1>
+    
+    <div class="export-note">
+        <strong>💡 Как экспортировать:</strong><br>
+        1. Откройте файл .mmd в текстовом редакторе<br>
+        2. Скопируйте содержимое<br>
+        3. Вставьте на <a href="https://mermaid.live" target="_blank">mermaid.live</a><br>
+        4. Экспортируйте в PNG или SVG
+    </div>
+
+    <!-- СЛАЙД 2: Актуальность -->
+    <div class="slide-section">
+        <h2>СЛАЙД 2: Актуальность и проблема</h2>
+        
+        <div class="diagram-container">
+            <h3>Рост рынка e-commerce</h3>
+            <div class="mermaid">
+                xychart-beta
+                    title "Рост рынка электронной коммерции в России (млрд руб.)"
+                    x-axis [2019, 2020, 2021, 2022, 2023, 2024]
+                    y-axis "Объем рынка (млрд руб.)" 0 --> 5000
+                    bar [1800, 2500, 3200, 3800, 4200, 4800]
+            </div>
+            <div class="description">Файл: slide_02_ecommerce_growth.mmd</div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Проблемы традиционных интернет-магазинов</h3>
+            <div class="mermaid">
+                flowchart TD
+                    A["Традиционный<br/>интернет-магазин"] --> B["Проблема 1:<br/>Множество шагов<br/>до покупки"]
+                    A --> C["Проблема 2:<br/>Переключение<br/>между приложениями"]
+                    A --> D["Проблема 3:<br/>Сложность<br/>для пользователя"]
+                    
+                    B --> E["Потеря<br/>конверсии"]
+                    C --> E
+                    D --> E
+            </div>
+            <div class="description">Файл: slide_02_problems.mmd</div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Статистика использования Telegram</h3>
+            <div class="mermaid">
+                pie title "Аудитория Telegram в России"
+                    "Активные пользователи" : 70
+                    "Потенциальные клиенты" : 30
+            </div>
+            <div class="description">Файл: slide_02_telegram_stats.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 3: Цель и задачи -->
+    <div class="slide-section">
+        <h2>СЛАЙД 3: Цель и задачи проекта</h2>
+        
+        <div class="diagram-container">
+            <h3>Иерархия целей и задач</h3>
+            <div class="mermaid">
+                flowchart TD
+                    A["ЦЕЛЬ:<br/>Повышение эффективности<br/>обслуживания клиентов<br/>и упрощение процесса<br/>взаимодействия"] --> B["Задача 1:<br/>Анализ предметной<br/>области"]
+                    A --> C["Задача 2:<br/>Изучение<br/>бизнес-процессов"]
+                    A --> D["Задача 3:<br/>Проектирование<br/>архитектуры"]
+                    A --> E["Задача 4:<br/>Разработка<br/>REST API"]
+                    A --> F["Задача 5:<br/>Разработка Mini App<br/>и бота"]
+                    A --> G["Задача 6:<br/>Тестирование"]
+                    A --> H["Задача 7:<br/>Экономическое<br/>обоснование"]
+                    A --> I["Задача 8:<br/>Оценка<br/>эффективности"]
+            </div>
+            <div class="description">Файл: slide_03_goals_tasks.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 4: Архитектура -->
+    <div class="slide-section">
+        <h2>СЛАЙД 4: Архитектура системы</h2>
+        
+        <div class="diagram-container">
+            <h3>Диаграмма архитектуры</h3>
+            <div class="mermaid">
+                flowchart TB
+                    subgraph Frontend["Frontend Layer"]
+                        MA["Telegram Mini App<br/>(Flutter Web)"]
+                        AP["Admin Panel<br/>(Flutter Web)"]
+                    end
+                    
+                    subgraph Backend["Backend Layer"]
+                        API["REST API<br/>(FastAPI)"]
+                    end
+                    
+                    subgraph Database["Data Layer"]
+                        PG["PostgreSQL<br/>(Основная БД)"]
+                        RD["Redis<br/>(Кэш)"]
+                    end
+                    
+                    subgraph Integrations["Integrations"]
+                        YK["YooKassa<br/>(Платежи)"]
+                        YD["Яндекс.Доставка<br/>(Доставка)"]
+                        TB["Telegram Bot API<br/>(Уведомления)"]
+                        DD["DaData<br/>(Адреса)"]
+                    end
+                    
+                    MA -->|REST API| API
+                    AP -->|REST API| API
+                    API -->|Запросы| PG
+                    API -->|Кэш| RD
+                    API -->|Интеграция| YK
+                    API -->|Интеграция| YD
+                    API -->|Интеграция| TB
+                    API -->|Интеграция| DD
+            </div>
+            <div class="description">Файл: slide_04_architecture.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 6: Модель данных -->
+    <div class="slide-section">
+        <h2>СЛАЙД 6: Модель данных</h2>
+        
+        <div class="diagram-container">
+            <h3>ER-диаграмма</h3>
+            <div class="mermaid">
+                erDiagram
+                    USERS ||--o{ ORDERS : places
+                    BUSINESSES ||--o{ PRODUCTS : has
+                    BUSINESSES ||--o{ ORDERS : receives
+                    BUSINESSES ||--o{ CATEGORIES : has
+                    PRODUCTS }o--|| CATEGORIES : belongs_to
+                    ORDERS ||--o{ ORDER_ITEMS : contains
+                    PRODUCTS ||--o{ ORDER_ITEMS : included_in
+                    ORDERS ||--o| PAYMENTS : has
+                    BUSINESSES ||--o{ PROMOCODES : has
+                    
+                    USERS {
+                        uuid id PK
+                        bigint telegram_id
+                        string email
+                        string role
+                    }
+                    
+                    BUSINESSES {
+                        uuid id PK
+                        string slug UK
+                        string name
+                        string description
+                    }
+                    
+                    PRODUCTS {
+                        uuid id PK
+                        uuid business_id FK
+                        string name
+                        decimal price
+                        string description
+                    }
+                    
+                    CATEGORIES {
+                        uuid id PK
+                        uuid business_id FK
+                        string name
+                    }
+                    
+                    ORDERS {
+                        uuid id PK
+                        uuid user_id FK
+                        uuid business_id FK
+                        decimal total_amount
+                        string status
+                    }
+                    
+                    ORDER_ITEMS {
+                        uuid id PK
+                        uuid order_id FK
+                        uuid product_id FK
+                        int quantity
+                        decimal price
+                    }
+                    
+                    PAYMENTS {
+                        uuid id PK
+                        uuid order_id FK
+                        string status
+                        decimal amount
+                    }
+                    
+                    PROMOCODES {
+                        uuid id PK
+                        uuid business_id FK
+                        string code
+                        decimal discount
+                    }
+            </div>
+            <div class="description">Файл: slide_06_er_diagram.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 7: Функции -->
+    <div class="slide-section">
+        <h2>СЛАЙД 7: Основные функции системы</h2>
+        
+        <div class="diagram-container">
+            <h3>Пользовательский сценарий</h3>
+            <div class="mermaid">
+                flowchart LR
+                    A["1. Открытие<br/>Mini App"] --> B["2. Просмотр<br/>каталога"]
+                    B --> C["3. Добавление<br/>в корзину"]
+                    C --> D["4. Оформление<br/>заказа"]
+                    D --> E["5. Оплата<br/>(YooKassa)"]
+                    E --> F["6. Получение<br/>уведомления"]
+            </div>
+            <div class="description">Файл: slide_07_user_flow.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 8: Статус -->
+    <div class="slide-section">
+        <h2>СЛАЙД 8: Реализованные компоненты</h2>
+        
+        <div class="diagram-container">
+            <h3>Прогресс реализации</h3>
+            <div class="mermaid">
+                xychart-beta
+                    title "Прогресс реализации компонентов (%)"
+                    x-axis ["Backend API", "Telegram Mini App", "Админ-панель", "Telegram-бот", "Интеграции"]
+                    y-axis "Процент выполнения" 0 --> 100
+                    bar [90, 85, 80, 40, 95]
+            </div>
+            <div class="description">Файл: slide_08_progress_bars.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 9: Демонстрация -->
+    <div class="slide-section">
+        <h2>СЛАЙД 9: Демонстрация работы системы</h2>
+        
+        <div class="diagram-container">
+            <h3>Схема работы системы</h3>
+            <div class="mermaid">
+                sequenceDiagram
+                    participant U as Пользователь
+                    participant MA as Mini App
+                    participant API as Backend API
+                    participant DB as База данных
+                    participant PAY as YooKassa
+                    participant BOT as Telegram Bot
+                    
+                    U->>MA: Открывает приложение
+                    MA->>API: Запрос каталога
+                    API->>DB: Получение товаров
+                    DB-->>API: Данные товаров
+                    API-->>MA: JSON ответ
+                    MA-->>U: Отображение каталога
+                    
+                    U->>MA: Добавляет в корзину
+                    U->>MA: Оформляет заказ
+                    MA->>API: Создание заказа
+                    API->>DB: Сохранение заказа
+                    DB-->>API: Подтверждение
+                    API->>PAY: Создание платежа
+                    PAY-->>API: Ссылка на оплату
+                    API-->>MA: Ссылка на оплату
+                    MA-->>U: Переход на оплату
+                    
+                    U->>PAY: Оплата
+                    PAY->>API: Webhook (успех)
+                    API->>DB: Обновление статуса
+                    API->>BOT: Отправка уведомления
+                    BOT-->>U: Уведомление в Telegram
+            </div>
+            <div class="description">Файл: slide_09_system_flow.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 10: Экономика -->
+    <div class="slide-section">
+        <h2>СЛАЙД 10: Экономическое обоснование</h2>
+        
+        <div class="diagram-container">
+            <h3>График окупаемости</h3>
+            <div class="mermaid">
+                xychart-beta
+                    title "График окупаемости проекта (месяцы)"
+                    x-axis [0, 1, 2, 3, 4, 5, 6]
+                    y-axis "Прибыль (тыс. руб.)" -200 --> 400
+                    line [0, -150, -100, -50, 0, 100, 250]
+            </div>
+            <div class="description">Файл: slide_10_roi.mmd</div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Сравнение с альтернативами</h3>
+            <div class="mermaid">
+                xychart-beta
+                    title "Сравнение стоимости решений (тыс. руб.)"
+                    x-axis ["Наше решение", "Готовые платформы", "Разработка с нуля"]
+                    y-axis "Стоимость (тыс. руб.)" 0 --> 500
+                    bar [150, 300, 450]
+            </div>
+            <div class="description">Файл: slide_10_alternatives.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 11: Результаты -->
+    <div class="slide-section">
+        <h2>СЛАЙД 11: Ожидаемые результаты</h2>
+        
+        <div class="diagram-container">
+            <h3>Метрики эффективности</h3>
+            <div class="mermaid">
+                xychart-beta
+                    title "Метрики эффективности (улучшение в %)"
+                    x-axis ["Качество обслуживания", "Скорость оформления", "Снижение нагрузки", "Общая эффективность"]
+                    y-axis "Улучшение (%)" 0 --> 50
+                    bar [35, 45, 40, 30]
+            </div>
+            <div class="description">Файл: slide_11_metrics.mmd</div>
+        </div>
+    </div>
+
+    <!-- СЛАЙД 12: Заключение -->
+    <div class="slide-section">
+        <h2>СЛАЙД 12: Заключение</h2>
+        
+        <div class="diagram-container">
+            <h3>Итоговое решение</h3>
+            <div class="mermaid">
+                flowchart TB
+                    subgraph Solution["Итоговое решение"]
+                        MA["✅ Telegram Mini App"]
+                        API["✅ Backend API"]
+                        BOT["✅ Telegram Bot"]
+                        INT["✅ Интеграции"]
+                    end
+                    
+                    Solution --> Result["Результат:<br/>Полнофункциональная<br/>система продаж"]
+            </div>
+            <div class="description">Файл: slide_12_final_architecture.mmd</div>
+        </div>
+    </div>
+
+</body>
+</html>
+
