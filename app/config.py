@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     # CORS
     cors_origins: list[str] = [
+        "*",  # В development разрешаем все origins для удобства разработки
+        # В production это должно быть строго ограничено конкретными доменами
         "http://localhost:3000",
         "http://localhost:8080",
         "http://localhost:8081",
@@ -38,8 +40,8 @@ class Settings(BaseSettings):
         "http://192.168.31.173:8000",
         "http://192.168.31.173:8080",
         "http://192.168.31.173:8081",
-        # Разрешаем все origins в development (для удобства)
-        # В production это должно быть строго ограничено
+        # GitHub Pages (Mini App)
+        "https://nikolasgev.github.io",
     ]
 
     # Environment
