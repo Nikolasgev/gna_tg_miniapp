@@ -5,6 +5,8 @@
 1. **ngrok** - для создания HTTPS туннеля
 2. **Telegram бот** - создается через @BotFather
 
+Для локальной отладки Mini App рекомендуется **ngrok** (скрипты `start_for_telegram.sh`, `start_for_telegram_ngrok.sh`, `start_for_telegram_single.sh`). При необходимости можно использовать альтернативы из репозитория (`start_for_telegram_serveo.sh`, `start_for_telegram_localhostrun.sh`). Сценарий **LocalTunnel** из репозитория удалён как избыточный.
+
 ## Шаг 1: Установка ngrok
 
 ```bash

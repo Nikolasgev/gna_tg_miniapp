@@ -37,7 +37,7 @@
 1. В том же чате с @BotFather отправьте `/newapp`
 2. Выберите вашего бота из списка
 3. Заполните данные:
-   - **Title:** Название вашего магазина (например, "Кофейня №1")
+   - **Title:** Название вашего магазина (например, "Мой магазин")
    - **Short name:** Короткое имя (будет в URL, например: `myshop`)
    - **Description:** Описание магазина
    - **Photo:** Загрузите логотип (опционально)
@@ -96,6 +96,26 @@
    # В Railway, Render или другом хостинге
    TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrsTUVwxyz
    ```
+
+   С этим токеном backend:
+   - при вызове `POST /api/v1/telegram/validate_init_data` сохраняет покупателя в таблице `users` (поле `telegram_id`, роль `client`, логин вида `tg_<id>`);
+   - после создания заказа с непустым `user_telegram_id` отправляет пользователю в Telegram сообщение с кратким составом заказа (Bot API `sendMessage`).
+
+   **Важно:** чтобы бот мог написать пользователю в личку, пользователь хотя бы раз должен нажать **«Запустить»** / отправить **`/start`** этому боту в Telegram. Иначе Telegram вернёт ошибку «bot was blocked by the user» / «chat not found».
+
+### Запуск бота-обработчика (polling)
+
+Помимо вызовов Bot API из backend (валидация WebApp, уведомления о заказах) можно запустить **отдельный процесс**, который слушает обновления через long polling: команды `/start`, `/help` и текстовые сообщения (каркас поддержки).
+
+Рядом с API (второй процесс на том же хосте или отдельный worker):
+
+```bash
+cd backend
+export TELEGRAM_BOT_TOKEN=<ваш_токен>
+python run_telegram_bot.py
+```
+
+Используется библиотека `python-telegram-bot` (polling; для webhook при стабильном HTTPS можно позже добавить endpoint в FastAPI и `setWebhook`).
 
 2. **Обновите CORS настройки** (если нужно):
    - Добавьте домен вашего Mini App в `CORS_ORIGINS`

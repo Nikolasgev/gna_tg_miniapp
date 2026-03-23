@@ -60,6 +60,8 @@ ENVIRONMENT=production
 CORS_ORIGINS=["https://your-miniapp.vercel.app","https://your-admin.vercel.app"]
 ```
 
+При `ENVIRONMENT=production` backend при импорте настроек проверяет: `SECRET_KEY` не короче 32 символов и не равен значению по умолчанию; `ADMIN_PASSWORD` не равен `admin123`; в `CORS_ORIGINS` не допускается `*`. Иначе процесс завершится с ошибкой — это защита от небезопасного деплоя.
+
 **Как получить DATABASE_URL:**
 - Railway: В настройках PostgreSQL базы → "Connect" → скопируйте "Postgres Connection URL"
 - Supabase: В настройках проекта → "Database" → "Connection string" → выберите "URI"

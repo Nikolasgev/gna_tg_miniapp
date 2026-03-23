@@ -30,7 +30,8 @@ function App() {
         title="Telegram Mini App Store - Создайте интернет-магазин в Telegram за 5 минут"
         description="Полнофункциональная платформа для создания интернет-магазина в Telegram. Каталог товаров, онлайн-оплата YooKassa, доставка Яндекс.Доставка, админ-панель. Запуск за 5 минут без программирования."
         keywords="telegram mini app, интернет-магазин telegram, магазин в telegram, telegram bot магазин, создание магазина telegram, онлайн магазин, ecommerce telegram, телеграм магазин, мини приложение telegram, платформа для магазина"
-        canonical="https://your-domain.com/"
+        ogImage="https://telegramstore.ru/og-image.jpg"
+        canonical="https://telegramstore.ru/"
       />
       <Navbar onOpenModal={() => handleOpenModal()} />
       <Hero onOpenModal={() => handleOpenModal()} />

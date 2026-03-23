@@ -13,8 +13,10 @@ const ContactModal = ({ isOpen, onClose, selectedService = null }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    // Инициализация EmailJS (можно использовать публичный ключ или настроить через переменные окружения)
-    emailjs.init('YOUR_PUBLIC_KEY') // Замените на ваш публичный ключ EmailJS
+    const key = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    if (key) {
+      emailjs.init(key)
+    }
   }, [])
 
   const handleSubmit = async (e) => {
@@ -48,8 +50,8 @@ const ContactModal = ({ isOpen, onClose, selectedService = null }) => {
       // Альтернатива: использовать EmailJS (раскомментируйте после настройки)
       /*
       await emailjs.send(
-        'YOUR_SERVICE_ID',      // Service ID из EmailJS
-        'YOUR_TEMPLATE_ID',     // Template ID из EmailJS
+        import.meta.env.VITE_EMAILJS_SERVICE_ID || '',
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '',
         {
           to_email: 'nikolasgev1@gmail.com',
           message: message,
@@ -60,7 +62,7 @@ const ContactModal = ({ isOpen, onClose, selectedService = null }) => {
           service_type: selectedService?.type || 'Не выбрано',
           service_price: selectedService?.price || 'Не выбрано',
         },
-        'YOUR_PUBLIC_KEY'       // Public Key из EmailJS
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
       )
       */
 
@@ -386,7 +388,6 @@ const ContactModal = ({ isOpen, onClose, selectedService = null }) => {
                   >
                     <option value="">Выберите вид деятельности</option>
                     <option value="cafe">Кафе / Ресторан</option>
-                    <option value="coffee">Кофейня</option>
                     <option value="shop">Интернет-магазин</option>
                     <option value="retail">Розничная торговля</option>
                     <option value="food">Доставка еды</option>
