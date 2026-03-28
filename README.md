@@ -12,6 +12,7 @@
 | [`docs/`](docs/) | Пояснительная записка, скрипт сборки DOCX. |
 | [`presentation/`](presentation/) | HTML-слайды предзащиты (Reveal.js). |
 | [`presentation_diagrams/`](presentation_diagrams/) | Исходники Mermaid для диаграмм. |
+| [`scripts/`](scripts/) | В т.ч. `check_production_readiness.sh` — проверка `/health` и CORS. |
 | Корневые `*.md` | Деплой, Telegram, тесты. |
 | `start_for_telegram*.sh` | Скрипты HTTPS-туннелей для локальной отладки Mini App (см. ниже и [QUICK_TELEGRAM_SETUP.md](QUICK_TELEGRAM_SETUP.md)). |
 
@@ -63,8 +64,11 @@ npm run dev
 
 ## Деплой и переменные окружения
 
+- [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) — чеклист: Railway, GitHub Pages, BotFather, CORS.
+- [docs/HOSTING.md](docs/HOSTING.md) — GitHub Pages vs Vercel vs Yandex Cloud.
 - [DEPLOY_STEPS.md](DEPLOY_STEPS.md) — пошаговый деплой.
-- В production задайте сильные `SECRET_KEY`, `ADMIN_PASSWORD` и явный список `CORS_ORIGINS` (см. `backend/app/config.py`).
+- Проверка API и CORS с машины: `./scripts/check_production_readiness.sh`
+- В production задайте сильные `SECRET_KEY`, `ADMIN_PASSWORD` и явный список `CORS_ORIGINS` (см. `backend/app/config.py`, [backend/RAILWAY_VARIABLES_SETUP.md](backend/RAILWAY_VARIABLES_SETUP.md)).
 
 ## Скрипты туннелей (корень репозитория)
 

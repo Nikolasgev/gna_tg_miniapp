@@ -5,11 +5,12 @@
 ### 1. **Домен с HTTPS (обязательно!)**
    - Telegram требует **HTTPS** для Mini App
    - Можно использовать:
-     - **Vercel** (бесплатно, автоматический HTTPS)
-     - **Netlify** (бесплатно, автоматический HTTPS)
-     - **GitHub Pages** (бесплатно, но нужен свой домен для HTTPS)
-     - **Railway** (платно, но можно использовать для frontend)
-     - **Любой другой хостинг с HTTPS**
+     - **GitHub Pages** (бесплатно, HTTPS на `*.github.io`; текущий деплой — workflow в репозитории фронта)
+     - **Vercel** / **Netlify** (бесплатно, автоматический HTTPS)
+     - **Railway** или другой хостинг с HTTPS
+   - **Пример Web App URL (актуальный стек):**  
+     `https://nikolasgev.github.io/gna-tg-miniapp-store-frontend/`  
+     В @BotFather укажите именно этот URL (или ваш кастомный домен после переноса).
 
 ### 2. **Telegram бот**
    - Создается через [@BotFather](https://t.me/BotFather)
@@ -41,7 +42,8 @@
    - **Short name:** Короткое имя (будет в URL, например: `myshop`)
    - **Description:** Описание магазина
    - **Photo:** Загрузите логотип (опционально)
-   - **Web App URL:** `https://your-miniapp.vercel.app` (URL вашего мини-приложения)
+   - **Web App URL:** URL вашего Mini App, например  
+     `https://nikolasgev.github.io/gna-tg-miniapp-store-frontend/` (GitHub Pages) или Vercel/другой хостинг
    - **GIF:** (опционально) Анимированная превью
    - **Short name:** (опционально) Короткое имя для кнопки
 
