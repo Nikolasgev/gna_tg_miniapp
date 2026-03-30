@@ -1,5 +1,7 @@
 # Настройка переменных окружения в Railway
 
+Если GitHub подключён к **монорепо** (корень репозитория содержит `backend/` и `frontend/`), в настройках сервиса Railway задайте **Root Directory** = `backend`. Иначе образ соберётся не из той папки. Подробнее: [RAILWAY_MONOREPO.md](../RAILWAY_MONOREPO.md).
+
 ## Шаг 1: Откройте сервис backend в Railway Dashboard
 
 1. Зайдите на https://railway.app/

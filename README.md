@@ -2,6 +2,8 @@
 
 Монорепозиторий: backend (FastAPI), Flutter Mini App и админ-панель, маркетинговый лендинг, документация и скрипты для отладки в Telegram.
 
+**Деплой на Railway из этого репо:** задайте **Root Directory** = `backend` и см. [RAILWAY_MONOREPO.md](RAILWAY_MONOREPO.md).
+
 ## Структура
 
 | Путь | Описание |
