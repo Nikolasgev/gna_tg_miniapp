@@ -1,0 +1,469 @@
+{
+  "@@locale": "en",
+  "appTitle": "Telegram Store",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  
+  "catalog": "Catalog",
+  "@catalog": {
+    "description": "Catalog screen title"
+  },
+  "catalogProducts": "Products Catalog",
+  "@catalogProducts": {
+    "description": "Catalog products title"
+  },
+  
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart screen title"
+  },
+  "cartEmpty": "Cart is empty",
+  "@cartEmpty": {
+    "description": "Message when cart is empty"
+  },
+  "addItemsFromCatalog": "Add items from catalog",
+  "@addItemsFromCatalog": {
+    "description": "Hint to add items from catalog"
+  },
+  "goToCatalog": "Go to catalog",
+  "@goToCatalog": {
+    "description": "Button to go to catalog"
+  },
+  "total": "Total",
+  "subtotal": "Subtotal",
+  "notAvailable": "Not Available",
+  "@total": {
+    "description": "Total price label"
+  },
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout button text"
+  },
+  
+  "ordersHistory": "Orders History",
+  "@ordersHistory": {
+    "description": "Orders history screen title"
+  },
+  "ordersHistorySubtitle": "Your previous orders",
+  "@ordersHistorySubtitle": {
+    "description": "Orders history menu subtitle"
+  },
+  "noOrders": "No orders",
+  "@noOrders": {
+    "description": "Message when no orders"
+  },
+  "ordersWillAppearHere": "Your orders will appear here",
+  "@ordersWillAppearHere": {
+    "description": "Message when orders list is empty"
+  },
+  
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "settingsSubtitle": "Language and theme",
+  "@settingsSubtitle": {
+    "description": "Settings menu subtitle"
+  },
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Appearance section title"
+  },
+  "lightTheme": "Light theme",
+  "@lightTheme": {
+    "description": "Light theme switch label"
+  },
+  "useLightColorScheme": "Use light color scheme",
+  "@useLightColorScheme": {
+    "description": "Light theme switch subtitle"
+  },
+  "darkTheme": "Dark theme",
+  "@darkTheme": {
+    "description": "Dark theme switch label"
+  },
+  "useDarkColorScheme": "Use dark color scheme",
+  "@useDarkColorScheme": {
+    "description": "Dark theme switch subtitle"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language section title"
+  },
+  "russian": "Russian",
+  "@russian": {
+    "description": "Russian language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  
+  "support": "Support",
+  "@support": {
+    "description": "Support screen title"
+  },
+  "supportSubtitle": "Contact us",
+  "@supportSubtitle": {
+    "description": "Support menu subtitle"
+  },
+  "contactUs": "Contact us",
+  "@contactUs": {
+    "description": "Contact us section title"
+  },
+  "contactUsDescription": "If you have any questions or problems, we are always ready to help!",
+  "@contactUsDescription": {
+    "description": "Contact us description"
+  },
+  "writeInTelegram": "Write in Telegram",
+  "@writeInTelegram": {
+    "description": "Telegram contact option"
+  },
+  "writeByEmail": "Write by email",
+  "@writeByEmail": {
+    "description": "Email contact option"
+  },
+  "faq": "Frequently Asked Questions",
+  "@faq": {
+    "description": "FAQ section title"
+  },
+  "faqCancelOrder": "How to cancel an order?",
+  "@faqCancelOrder": {
+    "description": "FAQ question about canceling order"
+  },
+  "faqCancelOrderAnswer": "You can cancel an order in the \"Orders History\" section until it is accepted for processing.",
+  "@faqCancelOrderAnswer": {
+    "description": "FAQ answer about canceling order"
+  },
+  "faqChangeAddress": "How to change delivery address?",
+  "@faqChangeAddress": {
+    "description": "FAQ question about changing address"
+  },
+  "faqChangeAddressAnswer": "The delivery address can be changed when placing an order or by contacting support.",
+  "@faqChangeAddressAnswer": {
+    "description": "FAQ answer about changing address"
+  },
+  "faqPaymentMethods": "What payment methods are available?",
+  "@faqPaymentMethods": {
+    "description": "FAQ question about payment methods"
+  },
+  "faqPaymentMethodsAnswer": "We accept cash on delivery and online via YooKassa.",
+  "@faqPaymentMethodsAnswer": {
+    "description": "FAQ answer about payment methods"
+  },
+  
+  "filters": "Filters",
+  "@filters": {
+    "description": "Filters button tooltip"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All categories filter"
+  },
+  "loadingError": "Loading error",
+  "@loadingError": {
+    "description": "Error message when loading fails"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "productsNotFound": "Products not found",
+  "@productsNotFound": {
+    "description": "Message when products not found"
+  },
+  "tryChangeSearchParams": "Try changing search parameters",
+  "@tryChangeSearchParams": {
+    "description": "Hint to change search parameters"
+  },
+  "ensureBackendRunning": "Make sure the backend is running:\ncd backend && docker-compose up -d",
+  "@ensureBackendRunning": {
+    "description": "Message to ensure backend is running"
+  },
+  
+  "deliveryAddressRequired": "Please specify delivery address",
+  "@deliveryAddressRequired": {
+    "description": "Error when delivery address is required"
+  },
+  "cartIsEmpty": "Cart is empty",
+  "@cartIsEmpty": {
+    "description": "Error when cart is empty"
+  },
+  
+  "orderDetails": "Order Details",
+  "@orderDetails": {
+    "description": "Order details screen title"
+  },
+  "orderNumber": "Order #{number}",
+  "@orderNumber": {
+    "description": "Order number display",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "orderStatus": "Status",
+  "@orderStatus": {
+    "description": "Order status label"
+  },
+  "orderTotal": "Total",
+  "@orderTotal": {
+    "description": "Order total label"
+  },
+  "customerInfo": "Customer Information",
+  "@customerInfo": {
+    "description": "Customer information section title"
+  },
+  "deliveryInfo": "Delivery Information",
+  "@deliveryInfo": {
+    "description": "Delivery information section title"
+  },
+  "paymentInfo": "Payment Information",
+  "@paymentInfo": {
+    "description": "Payment information section title"
+  },
+  "items": "Items",
+  "@items": {
+    "description": "Items section title"
+  },
+  
+  "name": "Name",
+  "@name": {
+    "description": "Name field label"
+  },
+  "phone": "Phone",
+  "@phone": {
+    "description": "Phone field label"
+  },
+  "address": "Address",
+  "@address": {
+    "description": "Address field label"
+  },
+  "deliveryMethod": "Delivery Method",
+  "@deliveryMethod": {
+    "description": "Delivery method label"
+  },
+  "pickup": "Pickup",
+  "@pickup": {
+    "description": "Pickup delivery method"
+  },
+  "delivery": "Delivery",
+  "@delivery": {
+    "description": "Delivery method"
+  },
+  "paymentMethod": "Payment Method",
+  "@paymentMethod": {
+    "description": "Payment method label"
+  },
+  "cash": "Cash",
+  "@cash": {
+    "description": "Cash payment method"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online payment method"
+  },
+  "comment": "Comment",
+  "@comment": {
+    "description": "Comment field label"
+  },
+  "placeOrder": "Place Order",
+  "@placeOrder": {
+    "description": "Place order button text"
+  },
+  
+  "statusNew": "New",
+  "@statusNew": {
+    "description": "Order status: new"
+  },
+  "statusAccepted": "Accepted",
+  "@statusAccepted": {
+    "description": "Order status: accepted"
+  },
+  "statusPreparing": "Preparing",
+  "@statusPreparing": {
+    "description": "Order status: preparing"
+  },
+  "statusReady": "Ready",
+  "@statusReady": {
+    "description": "Order status: ready"
+  },
+  "statusCancelled": "Cancelled",
+  "@statusCancelled": {
+    "description": "Order status: cancelled"
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": "Order status: completed"
+  },
+  
+  "paymentStatusPending": "Pending",
+  "@paymentStatusPending": {
+    "description": "Payment status: pending"
+  },
+  "paymentStatusPaid": "Paid",
+  "@paymentStatusPaid": {
+    "description": "Payment status: paid"
+  },
+  "paymentStatusFailed": "Failed",
+  "@paymentStatusFailed": {
+    "description": "Payment status: failed"
+  },
+  "paymentStatusRefunded": "Refunded",
+  "@paymentStatusRefunded": {
+    "description": "Payment status: refunded"
+  },
+  
+  "addToCart": "Add to Cart",
+  "@addToCart": {
+    "description": "Add to cart button text"
+  },
+  "removeFromCart": "Remove from Cart",
+  "@removeFromCart": {
+    "description": "Remove from cart button text"
+  },
+  "quantity": "Quantity",
+  "@quantity": {
+    "description": "Quantity label"
+  },
+  "price": "Price",
+  "@price": {
+    "description": "Price label"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Description label"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button text"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button text"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error message"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success message"
+  },
+  "unknownState": "Unknown state",
+  "@unknownState": {
+    "description": "Unknown state message"
+  },
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Unknown status"
+  },
+  "orderCreatedSuccessfully": "Order created successfully!",
+  "@orderCreatedSuccessfully": {
+    "description": "Success message when order is created"
+  },
+  "orderCreationError": "Error: {message}",
+  "@orderCreationError": {
+    "description": "Error message when order creation fails",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout screen title"
+  },
+  "contactInfo": "Contact Information",
+  "@contactInfo": {
+    "description": "Contact information section title"
+  },
+  "enterName": "Enter name",
+  "@enterName": {
+    "description": "Validation error for name field"
+  },
+  "enterPhone": "Enter phone",
+  "@enterPhone": {
+    "description": "Validation error for phone field"
+  },
+  "enterDeliveryAddress": "Enter delivery address",
+  "@enterDeliveryAddress": {
+    "description": "Validation error for delivery address field"
+  },
+  "deliveryMethodSection": "Delivery Method",
+  "@deliveryMethodSection": {
+    "description": "Delivery method section title"
+  },
+  "deliveryAddress": "Delivery Address",
+  "@deliveryAddress": {
+    "description": "Delivery address field label"
+  },
+  "product": "Product",
+  "@product": {
+    "description": "Product screen title"
+  },
+  "cancelOrder": "Cancel Order",
+  "@cancelOrder": {
+    "description": "Cancel order button label"
+  },
+  "createdDate": "Created Date",
+  "@createdDate": {
+    "description": "Created date label"
+  },
+  "onlinePayment": "Online Payment",
+  "@onlinePayment": {
+    "description": "Online payment method"
+  },
+  "systemTheme": "System Theme",
+  "@systemTheme": {
+    "description": "System theme option"
+  },
+  "followSystemSettings": "Follow system settings",
+  "@followSystemSettings": {
+    "description": "System theme subtitle"
+  },
+  "redirectingToPayment": "You will be redirected to the YooKassa payment page to complete the payment.",
+  "@redirectingToPayment": {
+    "description": "Message shown when redirecting to payment page"
+  },
+  "proceedToPayment": "Proceed to Payment",
+  "@proceedToPayment": {
+    "description": "Button text to proceed to payment page"
+  },
+  "couldNotOpenPaymentPage": "Could not open payment page",
+  "@couldNotOpenPaymentPage": {
+    "description": "Error message when payment page cannot be opened"
+  },
+  "errorOpeningPaymentPage": "Error opening payment page",
+  "@errorOpeningPaymentPage": {
+    "description": "Error message when there's an error opening payment page"
+  }
+}
+

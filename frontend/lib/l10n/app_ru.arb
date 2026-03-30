@@ -1,0 +1,143 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Telegram Store",
+  
+  "catalog": "Каталог",
+  "catalogProducts": "Каталог товаров",
+  
+  "cart": "Корзина",
+  "cartEmpty": "Корзина пуста",
+  "addItemsFromCatalog": "Добавьте товары из каталога",
+  "goToCatalog": "Перейти в каталог",
+  "total": "Итого",
+  "subtotal": "Товары",
+  "checkout": "Оформить заказ",
+  "notAvailable": "Недоступно",
+  
+  "ordersHistory": "История заказов",
+  "ordersHistorySubtitle": "Ваши предыдущие заказы",
+  "noOrders": "Нет заказов",
+  "ordersWillAppearHere": "Ваши заказы будут отображаться здесь",
+  
+  "settings": "Настройки",
+  "settingsSubtitle": "Язык и тема",
+  "appearance": "Внешний вид",
+  "lightTheme": "Светлая тема",
+  "useLightColorScheme": "Использовать светлую цветовую схему",
+  "darkTheme": "Темная тема",
+  "useDarkColorScheme": "Использовать темную цветовую схему",
+  "language": "Язык",
+  "russian": "Русский",
+  "english": "English",
+  
+  "support": "Поддержка",
+  "supportSubtitle": "Связаться с нами",
+  "contactUs": "Свяжитесь с нами",
+  "contactUsDescription": "Если у вас возникли вопросы или проблемы, мы всегда готовы помочь!",
+  "writeInTelegram": "Написать в Telegram",
+  "writeByEmail": "Написать на почту",
+  "faq": "Часто задаваемые вопросы",
+  "faqCancelOrder": "Как отменить заказ?",
+  "faqCancelOrderAnswer": "Вы можете отменить заказ в разделе \"История заказов\" до момента его принятия в обработку.",
+  "faqChangeAddress": "Как изменить адрес доставки?",
+  "faqChangeAddressAnswer": "Адрес доставки можно изменить при оформлении заказа или связавшись с поддержкой.",
+  "faqPaymentMethods": "Какие способы оплаты доступны?",
+  "faqPaymentMethodsAnswer": "Мы принимаем оплату наличными при получении и онлайн через YooKassa.",
+  
+  "filters": "Фильтры",
+  "all": "Все",
+  "loadingError": "Ошибка загрузки",
+  "retry": "Повторить",
+  "productsNotFound": "Товары не найдены",
+  "tryChangeSearchParams": "Попробуйте изменить параметры поиска",
+  "ensureBackendRunning": "Убедитесь, что бэкенд запущен:\ncd backend && docker-compose up -d",
+  
+  "deliveryAddressRequired": "Укажите адрес доставки",
+  "cartIsEmpty": "Корзина пуста",
+  
+  "orderDetails": "Детали заказа",
+  "orderNumber": "Заказ #{number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "orderStatus": "Статус",
+  "orderTotal": "Итого",
+  "customerInfo": "Информация о клиенте",
+  "deliveryInfo": "Информация о доставке",
+  "paymentInfo": "Информация об оплате",
+  "items": "Товары",
+  
+  "name": "Имя",
+  "phone": "Телефон",
+  "address": "Адрес",
+  "deliveryMethod": "Способ доставки",
+  "pickup": "Самовывоз",
+  "delivery": "Доставка",
+  "paymentMethod": "Способ оплаты",
+  "cash": "Наличными",
+  "online": "Онлайн",
+  "comment": "Комментарий",
+  "placeOrder": "Оформить заказ",
+  
+  "statusNew": "Новый",
+  "statusAccepted": "Принят",
+  "statusPreparing": "Готовится",
+  "statusReady": "Готов",
+  "statusCancelled": "Отменен",
+  "statusCompleted": "Завершен",
+  
+  "paymentStatusPending": "Ожидает оплаты",
+  "paymentStatusPaid": "Оплачен",
+  "paymentStatusFailed": "Ошибка оплаты",
+  "paymentStatusRefunded": "Возврат",
+  
+  "addToCart": "В корзину",
+  "removeFromCart": "Удалить из корзины",
+  "quantity": "Количество",
+  "price": "Цена",
+  "description": "Описание",
+  
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "delete": "Удалить",
+  "edit": "Редактировать",
+  "back": "Назад",
+  "close": "Закрыть",
+  "confirm": "Подтвердить",
+  "loading": "Загрузка...",
+  "error": "Ошибка",
+  "success": "Успешно",
+  "unknownState": "Неизвестное состояние",
+  "unknown": "Неизвестно",
+  "orderCreatedSuccessfully": "Заказ успешно создан!",
+  "orderCreationError": "Ошибка: {message}",
+  "@orderCreationError": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "checkout": "Оформление заказа",
+  "contactInfo": "Контактные данные",
+  "enterName": "Введите имя",
+  "enterPhone": "Введите телефон",
+  "enterDeliveryAddress": "Введите адрес доставки",
+  "deliveryMethodSection": "Способ получения",
+  "deliveryAddress": "Адрес доставки",
+  "product": "Товар",
+  "cancelOrder": "Отменить заказ",
+  "createdDate": "Дата создания",
+  "onlinePayment": "Онлайн оплата",
+  "systemTheme": "Системная тема",
+  "followSystemSettings": "Следовать системным настройкам",
+  "redirectingToPayment": "Вы будете перенаправлены на страницу оплаты ЮKassa для завершения платежа.",
+  "proceedToPayment": "Перейти к оплате",
+  "couldNotOpenPaymentPage": "Не удалось открыть страницу оплаты",
+  "errorOpeningPaymentPage": "Ошибка при открытии страницы оплаты"
+}
+

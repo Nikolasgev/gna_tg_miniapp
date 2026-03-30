@@ -1,0 +1,13 @@
+# https://dart.dev/guides/language/analysis-options
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+    - build/**
+
+linter:
+  rules:
+    avoid_print: false

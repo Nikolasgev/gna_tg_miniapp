@@ -1,0 +1,253 @@
+"""Скрипт для добавления товаров косметики с изображениями."""
+import asyncio
+import os
+from decimal import Decimal
+from pathlib import Path
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+import httpx
+from typing import Optional
+
+from app.config import settings
+from app.services.business_service import BusinessService
+from app.services.category_service import CategoryService
+from app.services.product_service import ProductService
+
+
+async def upload_image(image_path: str, base_url: str) -> Optional[str]:
+    """Загрузить изображение на сервер и получить URL."""
+    if not os.path.exists(image_path):
+        print(f"⚠️  Изображение не найдено: {image_path}")
+        return None
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            with open(image_path, 'rb') as f:
+                files = {'file': (os.path.basename(image_path), f, 'image/png')}
+                response = await client.post(
+                    f"{base_url}/api/v1/images/upload",
+                    files=files,
+                )
+                
+            if response.status_code == 200:
+                data = response.json()
+                image_url = data.get('url') or data.get('file_url')
+                if image_url:
+                    # Если это относительный путь, возвращаем как есть
+                    if image_url.startswith('/'):
+                        return image_url
+                    return image_url
+                print(f"⚠️  Не удалось получить URL из ответа: {response.json()}")
+                return None
+            else:
+                print(f"⚠️  Ошибка загрузки изображения {image_path}: {response.status_code} - {response.text}")
+                return None
+    except Exception as e:
+        print(f"⚠️  Ошибка при загрузке {image_path}: {e}")
+        return None
+
+
+async def add_cosmetic_products():
+    """Добавить товары косметики."""
+    
+    business_slug = "hair-cosmetics"
+    base_url = settings.base_url if hasattr(settings, 'base_url') else "http://localhost:8000"
+    
+    # Путь к папке с изображениями (относительно корня проекта)
+    # __file__ = backend/add_cosmetic_products.py
+    # parent.parent = корень проекта (GNA_tg_store)
+    images_dir = Path(__file__).parent.parent / "images"
+    
+    # Создаем подключение к БД
+    engine = create_async_engine(settings.database_url, echo=False)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    
+    async with async_session() as db:
+        business_service = BusinessService(db)
+        category_service = CategoryService(db)
+        product_service = ProductService(db)
+        
+        # Получаем бизнес
+        business = await business_service.get_by_slug(business_slug)
+        if not business:
+            print(f"❌ Бизнес '{business_slug}' не найден! Сначала создайте его через create_hair_cosmetics_business.py")
+            await engine.dispose()
+            return
+        
+        print(f"✅ Найден бизнес: {business.name} (slug: {business.slug})")
+        
+        # Получаем или создаем категории
+        existing_categories = await category_service.get_by_business_slug(business_slug)
+        category_map = {cat.name: cat for cat in existing_categories}
+        
+        # Создаем категорию "Маски для окрашенных волос", если её нет
+        if "Маски для окрашенных волос" not in category_map:
+            category = await category_service.create(
+                business_id=business.id,
+                name="Маски для окрашенных волос",
+                position=7,
+                surcharge=Decimal("0.00"),
+            )
+            category_map["Маски для окрашенных волос"] = category
+            print(f"✅ Создана категория: {category.name}")
+        else:
+            print(f"✅ Используется существующая категория: Маски для окрашенных волос")
+        
+        # Используем существующую категорию "Маски для волос" или создаем
+        if "Маски для волос" not in category_map:
+            category = await category_service.create(
+                business_id=business.id,
+                name="Маски для волос",
+                position=3,
+                surcharge=Decimal("0.00"),
+            )
+            category_map["Маски для волос"] = category
+            print(f"✅ Создана категория: {category.name}")
+        else:
+            print(f"✅ Используется существующая категория: Маски для волос")
+        
+        # Загружаем изображения
+        print(f"\n📸 Загрузка изображений...")
+        image_files = [
+            "image.png",
+            "image (1).png",
+            "image (2).png",
+            "image (3).png",
+            "image (4).png",
+            "image (5).png",
+        ]
+        
+        print(f"  Ищу изображения в: {images_dir.absolute()}")
+        print(f"  Директория существует: {images_dir.exists()}")
+        if images_dir.exists():
+            print(f"  Файлы в директории: {[f.name for f in images_dir.iterdir() if f.is_file()]}")
+        
+        uploaded_images = []
+        for img_file in image_files:
+            img_path = images_dir / img_file
+            print(f"  Проверяю путь: {img_path.absolute()}")
+            if img_path.exists():
+                print(f"  Загружаю {img_file}...")
+                url = await upload_image(str(img_path), base_url)
+                if url:
+                    uploaded_images.append(url)
+                    print(f"  ✅ Загружено: {url}")
+                else:
+                    print(f"  ⚠️  Не удалось загрузить {img_file}")
+                    uploaded_images.append(None)
+            else:
+                print(f"  ⚠️  Файл не найден: {img_path.absolute()}")
+                uploaded_images.append(None)
+        
+        # Товары для добавления (6 товаров: первые 3 в одну категорию, вторые 3 в другую)
+        products_data = [
+            # Первые 3 товара - KLOR MASK в категорию "Маски для окрашенных волос"
+            {
+                "title": "KLOR MASK 250 мл",
+                "description": "Маска надежно защищает цвет от вымывания, оживляет и придает волосам блеск. Масло макадамии в составе маски способствует питанию и восстановлению волос разной степени повреждения, придает волосам мягкость и шелковистость. А благодаря маслу марулы и экстракту огурца сохраняется влага внутри структуры волоса. Так же сохраняет цвет от выгорания на солнце благодаря UF-фильтрам в составе маски.",
+                "sku": "KOKMSKLOR250",
+                "category": "Маски для окрашенных волос",
+                "image_index": 0,  # image.png
+                "price": Decimal("1200.00"),
+            },
+            {
+                "title": "KLOR MASK 500 мл",
+                "description": "Маска надежно защищает цвет от вымывания, оживляет и придает волосам блеск. Масло макадамии в составе маски способствует питанию и восстановлению волос разной степени повреждения, придает волосам мягкость и шелковистость. А благодаря маслу марулы и экстракту огурца сохраняется влага внутри структуры волоса. Так же сохраняет цвет от выгорания на солнце благодаря UF-фильтрам в составе маски.",
+                "sku": "KOKMSKLOR500",
+                "category": "Маски для окрашенных волос",
+                "image_index": 1,  # image (1).png
+                "price": Decimal("1400.00"),
+            },
+            {
+                "title": "KLOR MASK",
+                "description": "Маска надежно защищает цвет от вымывания, оживляет и придает волосам блеск. Масло макадамии в составе маски способствует питанию и восстановлению волос разной степени повреждения, придает волосам мягкость и шелковистость. А благодаря маслу марулы и экстракту огурца сохраняется влага внутри структуры волоса. Так же сохраняет цвет от выгорания на солнце благодаря UF-фильтрам в составе маски.",
+                "sku": "KOKMSKLOR",
+                "category": "Маски для окрашенных волос",
+                "image_index": 2,  # image (2).png
+                "price": Decimal("1200.00"),
+            },
+            # Вторые 3 товара - KBYO/MSKA MASK в категорию "Маски для волос"
+            {
+                "title": "KBYO/MSKA MASK 250 мл",
+                "description": "ВНИМАНИЕ! У НОВОЙ ПАРТИИ МАСОК KBYO 500МЛ - ГЛЯНЦЕВЫЕ КРЫШКИ. Маски с такими крышками не являются браком или подделкой.\n\nМногофункциональная липидно-силиконовая маска, предназначена для ежедневного применения как в домашних условиях так и для использования в салоне в качестве уходового и технического продукта. Маска укрепляет, питает, увлажняет и придает шелковистость и блеск волосам, создает защитные пленки на поверхности волоса, защищает от агрессивных факторов от окружающей среды и облегчает расчесывание. Гидролизованный соевый протеин, экстракт огурца и масло марулы оказывают сильное увлажняющее действие. Биотин в составе придает волосам прочность.",
+                "sku": "KOMSKBYO250",
+                "category": "Маски для волос",
+                "image_index": 3,  # image (3).png
+                "price": Decimal("1100.00"),
+            },
+            {
+                "title": "KBYO/MSKA MASK 500 мл",
+                "description": "ВНИМАНИЕ! У НОВОЙ ПАРТИИ МАСОК KBYO 500МЛ - ГЛЯНЦЕВЫЕ КРЫШКИ. Маски с такими крышками не являются браком или подделкой.\n\nМногофункциональная липидно-силиконовая маска, предназначена для ежедневного применения как в домашних условиях так и для использования в салоне в качестве уходового и технического продукта. Маска укрепляет, питает, увлажняет и придает шелковистость и блеск волосам, создает защитные пленки на поверхности волоса, защищает от агрессивных факторов от окружающей среды и облегчает расчесывание. Гидролизованный соевый протеин, экстракт огурца и масло марулы оказывают сильное увлажняющее действие. Биотин в составе придает волосам прочность.",
+                "sku": "KOMSKBYO500",
+                "category": "Маски для волос",
+                "image_index": 4,  # image (4).png
+                "price": Decimal("1300.00"),
+            },
+            {
+                "title": "KBYO/MSKA MASK 2000 мл",
+                "description": "ВНИМАНИЕ! У НОВОЙ ПАРТИИ МАСОК KBYO 500МЛ - ГЛЯНЦЕВЫЕ КРЫШКИ. Маски с такими крышками не являются браком или подделкой.\n\nМногофункциональная липидно-силиконовая маска, предназначена для ежедневного применения как в домашних условиях так и для использования в салоне в качестве уходового и технического продукта. Маска укрепляет, питает, увлажняет и придает шелковистость и блеск волосам, создает защитные пленки на поверхности волоса, защищает от агрессивных факторов от окружающей среды и облегчает расчесывание. Гидролизованный соевый протеин, экстракт огурца и масло марулы оказывают сильное увлажняющее действие. Биотин в составе придает волосам прочность.",
+                "sku": "KOMSKBYO2000",
+                "category": "Маски для волос",
+                "image_index": 5,  # image (5).png
+                "price": Decimal("1900.00"),
+            },
+        ]
+        
+        print(f"\n🛍️  Добавление товаров...")
+        
+        # Проверяем существующие товары
+        existing_products = await product_service.get_by_business_slug(
+            business_slug,
+            include_inactive=True,
+        )
+        existing_skus = {p.sku for p in existing_products if p.sku}
+        
+        for product_data in products_data:
+            # Пропускаем, если товар уже существует
+            if product_data["sku"] in existing_skus:
+                print(f"⚠️  Товар с SKU '{product_data['sku']}' уже существует, пропускаем")
+                continue
+            
+            category = category_map[product_data["category"]]
+            category_ids = [category.id]
+            
+            # Получаем URL изображения
+            image_url = None
+            if product_data["image_index"] < len(uploaded_images):
+                image_url = uploaded_images[product_data["image_index"]]
+            
+            # Создаем товар
+            product_id = await product_service.create(
+                business_id=business.id,
+                title=product_data["title"],
+                description=product_data.get("description"),
+                price=product_data["price"],
+                currency="RUB",
+                sku=product_data["sku"],
+                image_url=image_url,
+                variations=None,  # Без вариантов, каждый размер - отдельный товар
+                category_ids=category_ids,
+            )
+            
+            # Получаем созданный товар для вывода информации
+            product = await product_service.get_by_id(product_id)
+            
+            if product:
+                print(f"✅ Создан товар: {product.title} (SKU: {product.sku}) - {product.price} ₽")
+                if image_url:
+                    print(f"   Изображение: {image_url}")
+            else:
+                print(f"✅ Создан товар: {product_data['title']} (SKU: {product_data['sku']}) - {product_data['price']} ₽")
+        
+        print(f"\n✅ Товары успешно добавлены!")
+    
+    await engine.dispose()
+
+
+if __name__ == "__main__":
+    print("🚀 Добавление товаров косметики...\n")
+    asyncio.run(add_cosmetic_products())
+
+
+
+
