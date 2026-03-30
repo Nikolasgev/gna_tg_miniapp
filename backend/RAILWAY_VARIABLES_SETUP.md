@@ -103,7 +103,7 @@ chmod +x scripts/check_production_readiness.sh
 ## Шаг 4: Миграции базы данных
 
 **Автоматически при каждом деплое:** в `railway.json` задан `preDeployCommand`:  
-`python -m alembic upgrade head`. Команда выполняется **в сети Railway** (доступен `postgres.railway.internal`). В логах деплоя смотрите этап **Pre-deploy**.
+`alembic upgrade head` (в `railway.json`; не `python -m alembic` — в среде Railway это даёт ошибку про `alembic.__main__`). Команда выполняется **в сети Railway** (доступен `postgres.railway.internal`). В логах деплоя смотрите этап **Pre-deploy**.
 
 **Почему не `railway run alembic` с Mac:** в `DATABASE_URL` часто указан хост `*.railway.internal` — с вашего компьютера DNS его не находит (`nodename nor servname not known`). Это нормально.
 
