@@ -50,7 +50,7 @@ logs/
 *.sqlite
 *.sqlite3
 
-# Uploads (опционально - можно закомментировать, если нужны тестовые изображения)
+# Uploads (опционально — можно закомментировать, если нужны тестовые изображения)
 # backend/uploads/images/*
 # !backend/uploads/images/.gitkeep
 
@@ -70,18 +70,3 @@ backend/*.pyc
 
 # Frontend specific
 frontend/temp_test/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
