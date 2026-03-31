@@ -27,12 +27,16 @@ if [[ "$DATABASE_URL" == *':PORT/'* ]] || [[ "$DATABASE_URL" == 'postgresql://US
   exit 1
 fi
 
-echo "==> 1/2 create_production_business.py"
+echo "==> 1/3 create_production_business.py"
 python create_production_business.py
 
 echo ""
-echo "==> 2/2 create_demo_menu.py"
+echo "==> 2/3 create_demo_menu.py"
 python create_demo_menu.py
+
+echo ""
+echo "==> 3/3 sync_hair_catalog_images.py (картинки для HAIR-* если товары уже были без URL)"
+python sync_hair_catalog_images.py
 
 echo ""
 echo "Готово. Перезапустите сервис gna_tg_miniapp в Railway (или подождите), чтобы сбросить кэш Redis."

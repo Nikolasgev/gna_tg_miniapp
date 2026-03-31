@@ -215,8 +215,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
                 RadioListTile<String>(
-                  title: const Text('Кофейня (default-business)'),
-                  subtitle: const Text('Кофе, десерты, напитки'),
+                  title: const Text('Основной магазин (default-business)'),
+                  subtitle: const Text('Косметика для волос (каталог из API)'),
                   value: 'default-business',
                   groupValue: _currentBusinessSlug,
                   onChanged: (value) {

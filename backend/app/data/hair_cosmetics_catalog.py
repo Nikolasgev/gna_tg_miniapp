@@ -7,6 +7,8 @@
 """
 from decimal import Decimal
 
+from app.data.periche_tilda_reference import HAIR_SKU_PERICHE_IMAGE_URL
+
 # Тема для бизнеса косметики (как в create_hair_cosmetics_business.py)
 HAIR_COSMETICS_THEME_SETTINGS = {
     "primary_color": "#C2185B",
@@ -193,3 +195,18 @@ HAIR_COSMETICS_PRODUCTS_DATA = [
         "category": "Окрашивание",
     },
 ]
+
+for _p in HAIR_COSMETICS_PRODUCTS_DATA:
+    _url = HAIR_SKU_PERICHE_IMAGE_URL.get(_p["sku"])
+    if _url:
+        _p["image_url"] = _url
+
+# Если в БД нет доноров и в каталоге нет image_url — sync подставит запасной сток.
+HAIR_FALLBACK_STOCK_URLS: tuple[str, ...] = (
+    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?auto=format&fit=crop&w=800&q=80",
+)
