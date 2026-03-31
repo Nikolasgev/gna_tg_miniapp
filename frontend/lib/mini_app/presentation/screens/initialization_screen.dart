@@ -76,7 +76,7 @@ class _InitializationScreenState extends State<InitializationScreen> {
           // Show error and retry option
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Ошибка инициализации. Проверьте подключение к интернету.'),
+              content: Text(state.message),
               action: SnackBarAction(
                 label: 'Повторить',
                 onPressed: _initializeApp,
@@ -119,7 +119,7 @@ class _InitializationScreenState extends State<InitializationScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Проверьте подключение к интернету и попробуйте еще раз.',
+                    state.message,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
