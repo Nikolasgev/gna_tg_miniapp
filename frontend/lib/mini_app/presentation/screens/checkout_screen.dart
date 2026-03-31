@@ -514,7 +514,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         } else if (checkoutState is CheckoutError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Не удалось создать заказ. Попробуйте еще раз.'),
+              content: Text(checkoutState.message),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );

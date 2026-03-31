@@ -10,6 +10,22 @@ import 'package:tg_store/mini_app/domain/entities/order.dart' as entities;
 class OrderRepositoryImpl implements domain.OrderRepository {
   final ApiClient _apiClient = ApiClient();
 
+  String _extractBackendDetail(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final detail = data['detail'];
+      if (detail is String && detail.isNotEmpty) {
+        return detail;
+      }
+      if (detail is List && detail.isNotEmpty) {
+        final first = detail.first;
+        if (first is Map<String, dynamic> && first['msg'] is String) {
+          return first['msg'] as String;
+        }
+      }
+    }
+    return '';
+  }
+
   @override
   Future<Either<Failure, entities.Order>> createOrder({
     required String businessSlug,
@@ -142,11 +158,24 @@ class OrderRepositoryImpl implements domain.OrderRepository {
 
       return Left(ServerFailure('Неверный формат ответа от сервера'));
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final message = e.response?.data['detail'] as String? ?? 'Ошибка валидации';
-        return Left(ServerFailure(message));
+      final statusCode = e.response?.statusCode;
+      final backendDetail = _extractBackendDetail(e.response?.data);
+      if (statusCode != null) {
+        if (backendDetail.isNotEmpty) {
+          return Left(ServerFailure(backendDetail));
+        }
+        if (statusCode == 401) {
+          return Left(ServerFailure('Ошибка авторизации Telegram. Переоткройте Mini App из бота.'));
+        }
+        if (statusCode == 403) {
+          return Left(ServerFailure('Доступ запрещен. Проверьте Telegram-подпись и повторите.'));
+        }
+        if (statusCode == 422) {
+          return Left(ServerFailure('Некорректные данные заказа. Проверьте обязательные поля.'));
+        }
+        return Left(ServerFailure('Ошибка сервера ($statusCode) при создании заказа.'));
       }
-      
+
       // Улучшенная обработка сетевых ошибок
       String errorMessage = 'Ошибка создания заказа';
       if (e.type == DioExceptionType.connectionError) {
