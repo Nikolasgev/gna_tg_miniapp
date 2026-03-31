@@ -28,7 +28,6 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   String? _businessSlug;
@@ -47,7 +46,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Sync controllers with BLoC state
     final checkoutState = context.read<CheckoutBloc>().state;
     if (checkoutState is CheckoutInitial) {
-      _nameController.text = checkoutState.customerName;
       _phoneController.text = checkoutState.customerPhone;
       _addressController.text = checkoutState.customerAddress;
     }
@@ -75,7 +73,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
     super.dispose();
@@ -122,6 +119,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     
     // Получаем user_telegram_id через утилиту (с поддержкой мока в режиме разработки)
     final userTelegramId = UserTelegramIdHelper.getUserTelegramId(context: context);
+    final customerNameFromTelegram = userTelegramId != null ? 'tg_$userTelegramId' : 'guest';
     
     // Рассчитываем итоговую сумму с учетом скидки по промокоду
     final deliveryCost = checkoutState.deliveryMethod == 'delivery' 
@@ -134,7 +132,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     context.read<CheckoutBloc>().add(
           SubmitOrder(
             businessSlug: businessSlug,
-            customerName: checkoutState.customerName,
+            customerName: customerNameFromTelegram,
             customerPhone: checkoutState.customerPhone,
             customerAddress: checkoutState.deliveryMethod == 'delivery' ? checkoutState.customerAddress : null,
             items: items,
@@ -566,9 +564,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   : const CheckoutInitial();
               
               // Sync controllers with BLoC state
-              if (_nameController.text != formState.customerName) {
-                _nameController.text = formState.customerName;
-              }
               if (_phoneController.text != formState.customerPhone) {
                 _phoneController.text = formState.customerPhone;
               }
@@ -590,22 +585,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
-                    ),
-                    const SizedBox(height: 16),
-                    AppTextField(
-                      controller: _nameController,
-                      labelText: AppLocalizations.of(context)!.name,
-                      prefixIcon: Icons.person,
-                      height: 56,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return AppLocalizations.of(context)!.enterName;
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        context.read<CheckoutBloc>().add(UpdateCustomerName(value));
-                      },
                     ),
                     const SizedBox(height: 16),
                     AppTextField(

@@ -36,7 +36,7 @@ class OrderItemRequest(BaseModel):
 class CreateOrderRequest(BaseModel):
     """Запрос на создание заказа."""
 
-    customer_name: str
+    customer_name: str | None = None
     customer_phone: str
     customer_address: str | None = None
     items: List[OrderItemRequest]
@@ -109,9 +109,17 @@ async def create_order(
 
         from decimal import Decimal
 
+        # В Mini App имя вручную больше не вводится: при наличии Telegram ID
+        # сохраняем техническое имя на основе него.
+        effective_customer_name = (
+            f"tg_{request.user_telegram_id}"
+            if request.user_telegram_id is not None
+            else (request.customer_name or "guest")
+        )
+
         order = await service.create_order(
             business_slug=business_slug,
-            customer_name=request.customer_name,
+            customer_name=effective_customer_name,
             customer_phone=request.customer_phone,
             customer_address=request.customer_address,
             items=items_data,
