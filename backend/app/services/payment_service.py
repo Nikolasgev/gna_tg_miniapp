@@ -206,22 +206,6 @@ class PaymentService:
                 except Exception as e:
                     logger.error(f"❌ Error awarding loyalty points for order {order.id}: {e}", exc_info=True)
                     # Не прерываем обработку платежа из-за ошибки начисления баллов
-
-                # Отправляем уведомление в Telegram только после успешной оплаты
-                try:
-                    from app.services.order_service import OrderService
-                    from app.services.telegram_notify_service import notify_order_created
-
-                    order_service = OrderService(self.db)
-                    order_notify = await order_service.get_by_id(order.id)
-                    if order_notify and order_notify.user_telegram_id:
-                        await notify_order_created(order_notify)
-                        logger.info(f"✅ Telegram notification sent for paid order {order.id}")
-                except Exception as e:
-                    logger.error(
-                        f"❌ Error sending Telegram notification for paid order {order.id}: {e}",
-                        exc_info=True,
-                    )
             elif payment.status == "canceled":
                 logger.info("❌ Payment canceled, updating order payment_status to 'failed'")
                 order.payment_status = "failed"

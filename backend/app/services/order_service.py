@@ -381,22 +381,18 @@ class OrderService:
         await self.db.commit()
         await self.db.refresh(order)
 
-        # Уведомление в Telegram отправляем только для наличных:
-        # для онлайн-оплаты уведомление шлётся из webhook YooKassa после
-        # фактической оплаты (payment.succeeded → order.payment_status="paid").
-        if payment_method != "online":
-            order_notify = await self.get_by_id(order.id)
-            if order_notify and order_notify.user_telegram_id:
-                from app.services.telegram_notify_service import notify_order_created
+        order_notify = await self.get_by_id(order.id)
+        if order_notify and order_notify.user_telegram_id:
+            from app.services.telegram_notify_service import notify_order_created
 
-                try:
-                    await notify_order_created(order_notify)
-                except Exception as e:
-                    logger.error(
-                        "Не удалось отправить уведомление о заказе в Telegram: %s",
-                        e,
-                        exc_info=True,
-                    )
+            try:
+                await notify_order_created(order_notify)
+            except Exception as e:
+                logger.error(
+                    "Не удалось отправить уведомление о заказе в Telegram: %s",
+                    e,
+                    exc_info=True,
+                )
 
         return order
 
