@@ -131,10 +131,7 @@ class OrderService:
             try:
                 from app.services.delivery_service import DeliveryService
                 from app.config import settings
-                import logging
-                
-                logger = logging.getLogger(__name__)
-                
+
                 # Адрес отправления из настроек
                 from_address = {
                     "fullname": settings.pickup_address_fullname,
@@ -233,8 +230,6 @@ class OrderService:
                     logger.warning("No delivery offers found, delivery cost set to 0")
                     
             except Exception as e:
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.error(f"Error calculating delivery cost: {e}", exc_info=True)
                 # Если не удалось рассчитать доставку, продолжаем без нее
                 # В production можно либо выбросить ошибку, либо использовать фиксированную стоимость

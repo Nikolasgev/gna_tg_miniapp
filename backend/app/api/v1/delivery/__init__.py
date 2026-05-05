@@ -111,7 +111,11 @@ async def calculate_delivery_cost(request: CalculateDeliveryRequest):
 
     try:
         service = DeliveryService()
-        
+
+        if not service.token:
+            logger.warning("Yandex Delivery token not configured — returning empty offers")
+            return {"offers": [], "reason": "delivery_not_configured"}
+
         # Преобразуем Pydantic модели в словари
         from_address_dict = request.from_address.model_dump()
         to_address_dict = request.to_address.model_dump()
