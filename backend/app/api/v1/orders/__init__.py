@@ -137,7 +137,7 @@ async def create_order(
             payment_service = PaymentService(db)
             
             # URL для возврата после оплаты (можно настроить в настройках бизнеса)
-            return_url = f"https://t.me/your_bot?start=order_{order.id}"
+            return_url = f"https://t.me/TG_shop_402_bot?start=order_{order.id}"
             
             try:
                 payment_info = await payment_service.create_yookassa_payment(
