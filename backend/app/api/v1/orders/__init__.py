@@ -293,14 +293,26 @@ async def get_order(
     """
     from app.services.order_service import OrderService
 
+    service = OrderService(db)
+    order = await service.get_by_id(order_id)
+
     if admin_payload is not None:
-        service = OrderService(db)
-        order = await service.get_by_id(order_id)
         if not order:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Заказ с ID '{order_id}' не найден",
             )
+        return _create_order_response(order)
+
+    if not order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Заказ с ID '{order_id}' не найден",
+        )
+
+    # Гостевой заказ (без привязки к Telegram) доступен любому, кто знает UUID:
+    # сам UUID непредсказуем и выполняет роль capability-токена.
+    if order.user_telegram_id is None:
         return _create_order_response(order)
 
     if x_telegram_init_data is None:
@@ -316,19 +328,6 @@ async def get_order(
             detail="Невалидные данные в заголовке X-Telegram-Init-Data",
         )
 
-    service = OrderService(db)
-    order = await service.get_by_id(order_id)
-
-    if not order:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Заказ с ID '{order_id}' не найден",
-        )
-    if order.user_telegram_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Заказ без привязки к Telegram недоступен для этого способа доступа",
-        )
     if order.user_telegram_id != viewer_tid:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
